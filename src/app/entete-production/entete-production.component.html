@@ -1,0 +1,58 @@
+@if(!showDetailsProdComponent){
+<form (submit)="createEnteteProduction(formData)">
+    <div class="card card-body">
+        <div class="col-sm-5 mb-4">
+            <div class="d-flex flex-column gap-3">
+                <h2>Production journaliere</h2>
+                <div class="d-flex align-items-center gap-3 mb-1">
+                    <h5 class="m-0">Date</h5>
+                    <input type="date" class="form-control" [(ngModel)]="formData.date" name="prod-date" />
+                </div>
+                <div class="d-flex align-items-center gap-3 mb-1">
+                    <h5 class="m-0">Departement</h5>
+                    <select class="form-select" [(ngModel)]="formData.dep" name="prod-dep">
+                        <option value="" selected disabled>Selectionner un departement</option>
+                        @for(dep of departements; track $index) {
+                        <option [value]="dep.id_departement">{{dep.nom_departement}}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 mb-4">
+            <div class="col-sm-4">
+                <h5>Equipe</h5>
+                <select class="form-select" [(ngModel)]="formData.equipe" name="prod-equipe">
+                    <option value="" selected disabled>Selectionner une equipe</option>
+                    @for (equipe of equipes; track $index){
+                    <option [value]="equipe.id_equipe">{{equipe.id_equipe}} - {{ equipe.nom_equipe }}</option>
+                    }
+                </select>
+            </div>
+            <div class="col-sm">
+                <h5>Team leader</h5>
+                <input type="text" [(ngModel)]="inputSuperviseur" class="form-control input-equipe w-50"
+                    (input)="searchSuperviseurs(1)" placeholder="Nom superviseur" id="sup_input" name="superviseur">
+                @if(listeSuperviseurs.length > 0){
+                <ul class="suggestions-list w-50">
+                    @for (sup of listeSuperviseurs; track $index) {
+                    <li class="suggestions-list-item" (click)="selectPersonnel($index)">{{ sup.nom_prenom }}</li>
+                    }
+                </ul>
+                }
+            </div>
+            <!--<div class="col-sm">
+                    <h5>Team leader</h5>
+                    <input type="text" class="form-control input-equipe" placeholder="Nom team leader" id="leader_input">
+                </div>-->
+        </div>
+
+        <button type="submit" class="button mt-4">Remplir details</button>
+
+    </div>
+</form>
+}
+@else {
+<app-details-production [response]="createEnteteResponse" />
+}

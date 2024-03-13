@@ -1,0 +1,31 @@
+<div class="card card-body mb-3">
+    <h2>Details de production</h2>
+    <h5>Departement {{response.departement.nom_departement}}</h5>
+</div>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Machine</th>
+            <th scope="col">Systeme</th>
+            <th scope="col">Poduction en KG</th>
+            <th scope="col">Nb Levata</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for(detail of details; track $index){
+        <tr>
+            <th scope="row">{{detail.id}}</th>
+            <td>{{machines[$index].nom_machine}}</td>
+            @if(machines[$index].systeme == 0){
+            <td>-</td>
+            }
+            @else {
+            <td>{{machines[$index].systeme}}</td>
+            }
+            <td>{{detail.production}}</td>
+            <td>{{detail.nb_levata}}</td>
+        </tr>
+        }
+    </tbody>
+</table>

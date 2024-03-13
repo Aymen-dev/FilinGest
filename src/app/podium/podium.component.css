@@ -1,0 +1,6 @@
+.podium {
+    display: flex; 
+    align-items: flex-center; 
+    justify-content: space-between; 
+    padding: 24px;
+}

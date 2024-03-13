@@ -1,0 +1,51 @@
+@if(!showDetailsProduction && !setDetailsProductionVisible){
+    @if(listeProd.length == 0){
+    {{responseMessage}}
+    }
+    @else {
+    <table class="table table-striped table-hover text-center">
+        <thead>
+            <tr>
+                <th scope="col" class="thead">#</th>
+                <th scope="col" class="thead">Equipe</th>
+                <th scope="col" class="thead">Departement</th>
+                <th scope="col" class="thead">Date</th>
+                <th scope="col" class="thead">Operations</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(prod of listeProd; track $index){
+            <tr>
+                <th scope="row">{{prod.id_entete}}</th>
+                <td>{{prod.equipe.nom_equipe}}</td>
+                <td>{{prod.departement.nom_departement}}</td>
+                <td>{{prod.date_production}}</td>
+                <td class="d-flex justify-content-center gap-2 align-items-center">
+                    <button class="visibility" (click)="viewProduction(prod.id_entete)">
+                        <span class="material-symbols-outlined">
+                            visibility
+                        </span>
+                    </button>
+                    <button class="edit" (click)="editProduction(prod.id_entete)">
+                        <span class="material-symbols-outlined">
+                            edit
+                        </span>
+                    </button>
+                    <button class="delete" (click)="deleteProduction(prod.id_entete)">
+                        <span class="material-symbols-outlined">
+                            delete
+                        </span>
+                    </button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    }
+    }
+    @else if (setDetailsProductionVisible) {
+        <app-view-details-production [responseData]="responseData" />
+    }
+    @else {
+        <app-details-production [responseData]="responseData" />
+    }
