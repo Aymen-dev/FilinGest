@@ -1,0 +1,116 @@
+@if(!showResponseMessage){
+<div class="header card card-body mb-3">
+    <div class="col-sm-10">
+        <div class="d-flex flex-column">
+            <h1>Production du departement {{response.data.departement?.nom_departement}}</h1>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h5 class="m-0">Pour la date de:</h5>
+                <p class="m-0" style="font-style: italic;">{{response.data.enteteProduction?.date_production}}</p>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h5 class="m-0">Equipe:</h5>
+                <p class="m-0" style="font-style: italic;">{{response.data.enteteProduction?.equipe}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form (submit)="createDetailsProduction(formData)" #myForm="ngForm">
+
+    <!--Pannes-->
+    <!--
+                <div class="card mb-5">
+                    <div class="card-body">
+                        <h5 class="card-title"><b>Pannes</b></h5>
+                        <p class="card-text"><small class="text-body-secondary">Choisir le type de panne pour chaque machine non
+                                fonctionnelle.</small></p>
+                        <hr>
+                        <div class="row align-items-center gap-3">
+                            <div class="col-md-10 d-flex flex-row gap-3 flex-wrap flex-md-nowrap">
+                                <select class="form-select">
+                                    <option disabled selected>Machine</option>
+                                    @for (machine of machines; track $index) {
+                                    <option>M{{machine.num}}</option>
+                                    }
+                                </select>
+                                <div class="d-flex gap-3 align-items-center flex-wrap flex-md-nowrap">
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                                        <label class="form-check-label" for="inlineCheckbox1">Panne1</label>
+                                    </div>
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                                        <label class="form-check-label" for="inlineCheckbox1">Panne2</label>
+                                    </div>
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                                        <label class="form-check-label" for="inlineCheckbox1">Panne3</label>
+                                    </div>
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                                        <label class="form-check-label" for="inlineCheckbox1">Panne4</label>
+                                    </div>
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                                        <label class="form-check-label" for="inlineCheckbox1">Panne5</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md justify-content-end d-flex">
+                                <div class="ajouter-panne" (click)="ajouterPanne()">
+                                    <button class="btn btn-outline-dark">Ajouter Panne</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    -->
+
+    <div class="table-responsive mb-2">
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th scope="col" class="thead"><span class="">Métier</span></th>
+                    <th scope="col" class="thead">Nb Levata</th>
+                    <th *ngIf="isDepFilature" class="thead" scope="col">Titre Fil</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (machine of machines; track $index){
+                <tr>
+                    <th scope="row">{{machine.nom_machine}}</th>
+                    <td class="p-0">
+                        <input type="number" required min="1" max="19" class="text-center table-input"
+                            name="nbLevata{{$index}}" [(ngModel)]="inputLevata[$index]" #levataInput="ngModel">
+                        <div *ngIf="levataInput.invalid && (levataInput.dirty || levataInput.touched)">
+                            <div *ngIf="levataInput.errors?.['min'] || levataInput.errors?.['max']">
+                                <div class="alert-info">Saisir un nombre entre 1 et 19</div>
+                            </div>
+                        </div>
+                    </td>
+                    <div *ngIf="isDepFilature">
+                        <td class="p-0">
+                            <select class=" form-select text-center" [(ngModel)]="inputTitre[$index]"
+                                name="titre{{$index}}">
+                                <option selected disabled>Selectionner le titre</option>
+                                @for (titre of titresFil; track $index) {
+                                <option [value]="titre.id_titre">{{titre.valeur_titre}}</option>
+                                }
+                            </select>
+                        </td>
+                    </div>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="button" [disabled]="!myForm.form.valid">Enregistrer</button>
+    </div>
+</form>
+
+}
+@else {
+{{message}}
+}
+<simple-notifications />

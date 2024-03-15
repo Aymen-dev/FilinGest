@@ -1,0 +1,19 @@
+@if(!gererDep && !gererMarque && !gererMachine && !gererModele){
+<div class="d-flex flex-column gap-3">
+    <button class="button" (click)="gererDepartements()">Gerer departements</button>
+    <button class="button" (click)="gererMachines()">Gerer machines</button>
+    <button class="button" (click)="gererMarques()">Gerer marques</button>
+    <button class="button" (click)="gererModeles()">Gerer modeles</button>
+</div>
+}
+@else if (gererDep) {
+    <app-liste-dynamique [data]="'Département'"></app-liste-dynamique>
+}
+
+@else if (gererMarque) {
+    <app-liste-dynamique [data]="'Marque'"></app-liste-dynamique>
+}
+
+@else if (gererModele) {
+    <app-liste-dynamique [data]="'Model'"></app-liste-dynamique>
+}

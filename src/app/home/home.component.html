@@ -1,0 +1,129 @@
+<div class="d-flex">
+    <div class="col-3">
+        <div class="sidebar">
+            <div class="window-container">
+
+                <div class="sidebar-header">
+                    <div class="d-flex align-items-center gap-1 mb-3">
+                        <span class="material-symbols-outlined">
+                            person
+                        </span>
+                        <h3 class="m-0">Utilisateur</h3>
+                    </div>
+                    <p class="text-body-secondary">Responsable Production</p>
+                    <hr class="w-75">
+                </div>
+
+                <div class="sidebar-content">
+                    <a class="sidebar-item" data-bs-toggle="collapse" href="#collapseExample" role="button"
+                        aria-expanded="false" aria-controls="collapseExample">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="material-symbols-outlined">
+                                construction
+                            </span>
+                            <span>Operations</span>
+                        </div>
+                        <div class="expand-icon">
+                            <span class="material-symbols-outlined">
+                                expand_more
+                            </span>
+                        </div>
+                    </a>
+                    <div class="collapse p-1" id="collapseExample">
+                        <div class="card card-body bg-body-secondary border-0 gap-4">
+                            <a routerLink="entete-production" class="dropdown-item">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Ajouter Production</span>
+                                    <span class="material-symbols-outlined">
+                                        add
+                                    </span>
+                                </div>
+                            </a>
+                            <a routerLink="liste-productions" class="dropdown-item">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Consulter liste productions</span>
+                                    <span class="material-symbols-outlined">
+                                        visibility
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <a class="sidebar-item" data-bs-toggle="collapse" href="#collapseExample1" role="button"
+                        aria-expanded="false" aria-controls="collapseExample">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="material-symbols-outlined">
+                                construction
+                            </span>
+                            <span>Operations Admin</span>
+                        </div>
+                        <div class="expand-icon">
+                            <span class="material-symbols-outlined">
+                                expand_more
+                            </span>
+                        </div>
+                    </a>
+                    <div class="collapse p-1" id="collapseExample1">
+                        <div class="card card-body bg-body-secondary border-0 gap-4">
+                            <a [routerLink]="['/liste-dynamique', 'Département']" class="dropdown-item">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Gerer Département</span>
+                                    <span class="material-symbols-outlined">
+                                        construction
+                                    </span>
+                                </div>
+                            </a>
+                            <a routerLink="liste-machines" class="dropdown-item">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Gerer Machine</span>
+                                    <span class="material-symbols-outlined">
+                                        construction
+                                    </span>
+                                </div>
+                            </a>
+                            <a [routerLink]="['/liste-dynamique', 'Marque']" class="dropdown-item">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Gerer Marque</span>
+                                    <span class="material-symbols-outlined">
+                                        construction
+                                    </span>
+                                </div>
+                            </a>
+                            <a routerLink="liste-productions" class="dropdown-item">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Gerer Modele</span>
+                                    <span class="material-symbols-outlined">
+                                        construction
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <a routerLink="podium">
+                        <div class="sidebar-item">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="material-symbols-outlined">
+                                    search
+                                </span>
+                                <span>Consulter</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <!--<div class="sidebar-footer text-center mt-5">
+                <p class="text-body-secondary fst-italic">Filin 2024-2025</p>
+            </div>-->
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="main-content">
+            <div class="window-container">
+                <div class="content-window-container">
+                    <router-outlet></router-outlet>
+                    <simple-notifications></simple-notifications>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
