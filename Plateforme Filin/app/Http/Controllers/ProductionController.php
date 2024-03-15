@@ -48,7 +48,6 @@ class ProductionController extends Controller
                 $titre = TitreFil::find($detail['titre']);
                 if ($titre)
                     $objectif_prod = $titre->nb_levata * $machine->caract_numerique;
-                $objectif_prod = 0;
             } else
                 $objectif_prod = 0;
 
