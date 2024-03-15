@@ -16,9 +16,11 @@ class EquipeController extends Controller
     {
         $equipes = Equipe::all();
         if ($equipes->isEmpty())
-            return response()->json(['status_code' => 204, 'message' => 'Liste des equipes vide'], 200);
+            return response()->json(['message' => 'Liste des equipes vide', 'data' => []], 200);
 
-        return response()->json(['status_code' => 200, 'message' => 'Liste des equipes retrouvée', 'equipes' => $equipes], 200);
+        return response()->json(['message' => 'Liste des equipes retrouvée', 'data' => [
+            'equipes' => $equipes
+        ]], 200);
     }
 
     /** 
@@ -28,11 +30,12 @@ class EquipeController extends Controller
     public function getById($id)
     {
         $equipe = Equipe::find($id);
-
         if (!$equipe)
-            return response()->json(['status_code' => 404, 'message' => 'Equipe n\'existe pas'], 404);
+            return response()->json(['message' => 'Equipe n\'existe pas', 'data' => null], 404);
 
-        return response()->json(['status_code' => 200, 'message' => 'Equipe trouvée', 'equipe' => $equipe], 200);
+        return response()->json(['message' => 'Equipe retrouvée', 'data' => [
+            'equipe' => $equipe
+        ]], 200);
     }
 
     /**
@@ -42,7 +45,9 @@ class EquipeController extends Controller
     public function store(Request $request)
     {
         Equipe::create($request->all());
-        return response()->json(['status_code' => 200, 'message' => 'Equipe crée', 'equipes' => Equipe::all()], 200);
+        return response()->json(['message' => 'Equipe crée', 'data' => [
+            'equipes' => Equipe::all()
+        ]], 200);
     }
 
     /**
@@ -54,10 +59,14 @@ class EquipeController extends Controller
     {
         $equipe = Equipe::find($id);
         if (!$equipe)
-            return response()->json(['status_code' => 404, 'message' => 'Equipe n\'existe pas'], 404);
+            return response()->json(['message' => 'Equipe n\'existe pas', 'data' => [
+                'equipes' => Equipe::all()
+            ]], 404);
 
         $equipe->update($request->all());
-        return response()->json(['status_code' => 200, 'message' => 'Equipe mise a jour', 'equipes' => Equipe::all()], 200);
+        return response()->json(['message' => 'Equipe mise a jour', 'data' => [
+            'equipes' => Equipe::all()
+        ]], 200);
     }
 
     /**
@@ -68,8 +77,12 @@ class EquipeController extends Controller
     {
         $records_deleted = Equipe::destroy($id);
         if ($records_deleted == 0)
-            return response()->json(['status_code'=> 404, 'message'=> 'Equipe n\'existe pas'], 404);
+            return response()->json(['message' => 'Equipe n\'existe pas', 'data' => [
+                'equipes' => Equipe::all()
+            ]], 404);
 
-        return response()->json(['status_code'=> 200, 'message'=> 'Equipe supprimée', 'equipes' => Equipe::all()], 200);
+        return response()->json(['message' => 'Equipe supprimée', 'data' => [
+            'equipes' => Equipe::all()
+        ]], 200);
     }
 }
