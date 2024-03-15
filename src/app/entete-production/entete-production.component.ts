@@ -81,6 +81,7 @@ export class EnteteProductionComponent {
 
   createEnteteProduction() {
     this.formData.date_production = this.dateProd;
+    console.log('a')
     this.prodService.saveEnteteProduction(this.formData).subscribe({
       next: (response: BackendResponse) => {
         this.createEnteteResponse = response;
