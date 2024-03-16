@@ -4,7 +4,7 @@ import { BackendResponse } from '../interfaces/backend-response';
 import { EnteteProduction } from '../models/entete-production.model';
 import { PopUpService } from '../services/pop-up.service';
 import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router'
+import { Router } from '@angular/router';
 
 
 
@@ -28,18 +28,21 @@ export class ListeProductionsComponent {
 
   loadListeProd() {
     this.prodService.getListeEntetesProduction().subscribe({
-      next: (response) => {
+      next: response => {
         if (response.data.entetesProduction) {
           this.listeProd = (response as BackendResponse).data.entetesProduction;
           this.responseMessage = (response as BackendResponse).message;
         }
-        else{
+        else {
           this.popUpService.showInfo('Liste vide');
           this.listeProd = undefined;
         }
       },
-      error: (error) => {
-        console.error(error);
+      error: err => {
+        if (err.name == 'HttpErrorResponse')
+          this.popUpService.showFail('Impossible d\'établir une connexion avec le serveur');
+        else
+          this.popUpService.showFail('Une erreur s\'est produite, réessayez plus tard ' + err.error.message);
       }
     })
   }
@@ -51,33 +54,146 @@ export class ListeProductionsComponent {
           this.loadListeProd();
           this.popUpService.showSuccess('Production supprimée');
         },
-        error: (error) => {
-          console.log('Error:' + error)
+        error: err => {
+          this.popUpService.showFail('Une erreur s\'est produite, réessayez plus tard ' + err.error.message);
         }
       })
   }
 
   editProduction(id: number) {
-    this.prodService.getDetailsProductionByEnteteId(id).subscribe(
-      response => {
+    this.prodService.getDetailsProductionByEnteteId(id).subscribe({
+      next: response => {
         this.router.navigate(['details-production'], {
           state: {
             response: response
           }
         })
+      },
+      error: err => {
+        this.popUpService.showFail('Une erreur s\'est produite, réessayez plus tard ' + err.error.message);
       }
-    )
+    })
   }
 
+  isSorted(listeProd: Array<EnteteProduction>, entity: string, sortOrder: 'ASC' | 'DESC'): boolean {
+    const sortedList = this.sortList(listeProd, entity, sortOrder);
+    return this.arraysAreEqual(listeProd, sortedList);
+  }
+
+  sortList(listeProd: Array<EnteteProduction>, entity: string, sortOrder: 'ASC' | 'DESC'): Array<EnteteProduction> {
+    return listeProd.slice().sort((a, b) => {
+      const aValue = this.getPropertyValue(a, entity);
+      const bValue = this.getPropertyValue(b, entity);
+
+      if (sortOrder === 'ASC') {
+        return aValue.localeCompare(bValue);
+      } else {
+        return bValue.localeCompare(aValue);
+      }
+    });
+  }
+
+  getPropertyValue(item: EnteteProduction, property: string): string {
+    switch (property) {
+      case 'equipe':
+        return item.equipe.nom_equipe;
+      case 'departement':
+        return item.departement.nom_departement;
+      case 'date':
+        return new Date(item.date_production).toISOString();
+      default:
+        return '';
+    }
+  }
+
+  arraysAreEqual(arr1: Array<EnteteProduction>, arr2: Array<EnteteProduction>): boolean {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  sort(entity: string, sortOrder: 'ASC' | 'DESC'): void {
+    if (this.listeProd) {
+      this.listeProd = this.sortList(this.listeProd, entity, sortOrder);
+    }
+  }
+
+  sortColumn(columnIndex: number) {
+    if (!this.listeProd) return;
+
+    let entity: string;
+    let sortOrder: 'ASC' | 'DESC';
+
+    switch (columnIndex) {
+      case 1:
+        entity = 'equipe';
+        break;
+      case 2:
+        entity = 'departement';
+        break;
+      case 3:
+        entity = 'date';
+        break;
+      default:
+        return;
+    }
+
+    if (this.isSorted(this.listeProd, entity, 'DESC')) {
+      sortOrder = 'ASC';
+    } else if (this.isSorted(this.listeProd, entity, 'ASC')) {
+      sortOrder = 'DESC';
+    } else {
+      sortOrder = 'ASC';
+    }
+
+    this.sort(entity, sortOrder);
+  }
+
+  isAscending(columnIndex: number): boolean {
+    const entity = this.getEntityForColumn(columnIndex);
+    return this.isSorted(this.listeProd!, entity, 'ASC');
+  }
+  
+  isDescending(columnIndex: number): boolean {
+    const entity = this.getEntityForColumn(columnIndex);
+    return this.isSorted(this.listeProd!, entity, 'DESC');
+  }
+  
+  getEntityForColumn(columnIndex: number): string {
+    switch (columnIndex) {
+      case 1:
+        return 'equipe';
+      case 2:
+        return 'departement';
+      case 3:
+        return 'date';
+      default:
+        return '';
+    }
+  }
+  
+
+
   viewProduction(id: number) {
-    this.prodService.getDetailsProductionByEnteteId(id).subscribe(
-      response => {
+    this.prodService.getDetailsProductionByEnteteId(id).subscribe({
+      next: response => {
         this.router.navigate(['view-details-production'], {
           state: {
             response: response
           }
         });
+      },
+      error: err => {
+        this.popUpService.showFail('Une erreur s\'est produite, réessayez plus tard ' + err.error.message);
       }
-    )
+    })
   }
 }

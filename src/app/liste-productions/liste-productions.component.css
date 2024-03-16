@@ -1,9 +1,3 @@
-
-
-th.thead {
-    background-color: #3b589878;
-}
-
 button {
     justify-content: center;
     display: flex;
@@ -20,5 +14,18 @@ button.delete:hover {
 }
 
 button.visibility:hover {
-    color:rgb(50, 205, 96);
+    color: rgb(50, 205, 96);
+}
+
+.arrow-icon {
+    margin: 0;
+    font-size: 18px;
+}
+
+.arrow-up::after {
+    content: '\2B99';
+}
+
+.arrow-down::after {
+    content: '\2B9B';
 }

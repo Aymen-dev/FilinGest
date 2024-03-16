@@ -1,15 +1,17 @@
 <div class="card card-body mb-3">
     <h2>Details de production</h2>
-    <h5>Departement {{response.data.departement?.nom_departement}}</h5>
+    <h5>Departement {{ dep?.nom_departement }}</h5>
+    <span class="text-body-secondary mb-0">Date: {{ entete?.date_production }}</span>
 </div>
-<table class="table table-bordered table-striped">
+<table class="table table-hover table-striped text-center">
     <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Machine</th>
-            <th scope="col">Systeme</th>
-            <th scope="col">Poduction en Kg</th>
-            <th scope="col">Nb Levata</th>
+            <td scope="col" class="thead">#</td>
+            <td scope="col" class="thead">Machine</td>
+            <td scope="col" class="thead">Systeme</td>
+            <td scope="col" class="thead">Poduction en Kg</td>
+            <td scope="col" class="thead">Nb Levata</td>
+            <td scope="col" class="thead">Objectif Production</td>
         </tr>
     </thead>
     <tbody>
@@ -25,7 +27,9 @@
             }
             <td>{{detail.production}}</td>
             <td>{{detail.nb_levata}}</td>
+            <td>{{detail.objectif_production}}</td>
         </tr>
         }
     </tbody>
 </table>
+<button class="button">Total production</button>

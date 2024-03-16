@@ -29,8 +29,6 @@ export class DetailsProductionComponent implements OnInit {
   response!: BackendResponse;
 
   isDepFilature: boolean = false;
-  showResponseMessage: boolean = false;
-  message: string = '';
 
   formData: any = {
     productionDetails: []

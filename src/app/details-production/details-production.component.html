@@ -1,8 +1,7 @@
-@if(!showResponseMessage){
 <div class="header card card-body mb-3">
     <div class="col-sm-10">
         <div class="d-flex flex-column">
-            <h1>Production du departement {{response.data.departement?.nom_departement}}</h1>
+            <h2>Production du departement {{response.data.departement?.nom_departement}}</h2>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <h5 class="m-0">Pour la date de:</h5>
                 <p class="m-0" style="font-style: italic;">{{response.data.enteteProduction?.date_production}}</p>
@@ -108,9 +107,4 @@
         <button type="submit" class="button" [disabled]="!myForm.form.valid">Enregistrer</button>
     </div>
 </form>
-
-}
-@else {
-{{message}}
-}
 <simple-notifications />

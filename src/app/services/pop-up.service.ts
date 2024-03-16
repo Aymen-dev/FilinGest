@@ -10,7 +10,7 @@ export class PopUpService {
   showSuccess(msg: string): void {
     this.serviceNot.success("Succés", msg, {
       position: ["bottom", "left"],
-      timeOut: 2500,
+      timeOut: 5000,
       showProgressBar: true,
       pauseOnHover: true,
       clickToClose: false,
@@ -21,7 +21,7 @@ export class PopUpService {
   showFail(msg: string): void {
     this.serviceNot.error("Attention", msg, {
       position: ["bottom", "right"],
-      timeOut: 2500,
+      timeOut: 5000,
       showProgressBar: true,
       pauseOnHover: true,
       clickToClose: false,
@@ -33,7 +33,7 @@ export class PopUpService {
   showInfo(msg: string): void {
     this.serviceNot.warn("Info", msg, {
       position: ["bottom", "right"],
-      timeOut: 2500,
+      timeOut: 5000,
       showProgressBar: true,
       pauseOnHover: true,
       clickToClose: false,

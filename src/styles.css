@@ -70,3 +70,17 @@ body {
 .card {
     border: 1px solid black !important;
 }
+
+table > thead {
+    border: 1px solid #3b5998;
+}
+
+td.thead {
+    background-color: #8b9dc3 !important;
+    font-size: 20px;
+}
+
+td.thead > span:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
