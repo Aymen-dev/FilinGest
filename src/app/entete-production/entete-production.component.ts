@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { Personnel } from '../models/personnel.model';
 import { PersonnelService } from '../services/personnel.service';
 import { EquipeService } from '../services/equipe.service';
@@ -25,34 +25,70 @@ export class EnteteProductionComponent {
   formData = {
     equipe: '',
     departement: '',
+    superviseur: '',
+    team_leader: '',
     date_production: ''
   };
 
 
   dateProd: string = '';
   createEnteteResponse: BackendResponse;
-  showDetailsProdComponent: boolean = false;
   equipes: Array<Equipe> | undefined = [];
   departements: Array<Departement> | undefined = [];
-  inputSuperviseur: string = '';
-  inputTeamLeader: string = '';
+  listePersonnel: Array<Personnel> = [];
   listeSuperviseurs: Array<Personnel> = [];
   listeTeamLeaders: Array<Personnel> = [];
 
 
   constructor(private route: ActivatedRoute, private router: Router, private personnelService: PersonnelService, private prodService: ProductionService, private depService: DepartementService, private equipeService: EquipeService, private popUpService: PopUpService) {
     this.createEnteteResponse = { message: '', data: {} };
-    this.loadListeEquipes();
     this.loadListeDepartements();
     const today = new Date();
     this.dateProd = today.toISOString().slice(0, 10);
   }
-  
 
-  loadListeEquipes() {
-    this.equipeService.getListeEquipes().subscribe(
-      response => this.equipes = response.data.equipes
-    );
+  loadListePersonnel(idEquipe: number) {
+    this.personnelService.getListePersonnelByEquipe(idEquipe).subscribe({
+      next: response => {
+        if (response.data.personnel) {
+          console.log(response.data.personnel)
+          this.listePersonnel = response.data.personnel
+          this.filterPersonnelByRole('superviseur');
+          this.filterPersonnelByRole('team leader');
+        }
+      },
+      error: err => {
+        console.log(err);
+      }
+    })
+  }
+
+  filterPersonnelByRole(role: string) {
+    if (this.listePersonnel.length)
+      if (role == 'superviseur') {
+        this.listeSuperviseurs = [];
+        this.listePersonnel.filter(personnel => {
+          personnel.role == 'superviseur' ? this.listeSuperviseurs.push(personnel) : 0
+        })
+      }
+      else {
+        this.listeTeamLeaders = [];
+        this.listePersonnel.filter(personnel => {
+          personnel.role == 'team leader' ? this.listeTeamLeaders.push(personnel) : 0
+        })
+      }
+  }
+
+  loadListeEquipes(idDep: number) {
+    this.equipeService.getListeEquipesByDep(idDep).subscribe({
+      next: response => {
+        if (response.data.equipes)
+          this.equipes = response.data.equipes;
+      },
+      error: err => {
+        console.log(err);
+      }
+    })
   }
 
   loadListeDepartements() {
@@ -61,22 +97,18 @@ export class EnteteProductionComponent {
     );
   }
 
-  searchSuperviseurs(id: number) {
-    this.personnelService.getListePersonnelBySearchTerm(this.inputSuperviseur).subscribe(
-      response => this.listeSuperviseurs = response
-    )
-  }
-
-  selectPersonnel(index: number) {
-    this.inputSuperviseur = this.listeSuperviseurs[index].nom_prenom;
-    this.listeSuperviseurs.length = 0;
-  }
 
   submitForm(form: NgForm): void {
     if (!form.valid)
       this.popUpService.showFail("Tous les details sont requises")
-    else
-      this.createEnteteProduction();
+    else{
+      this.formData.date_production = this.dateProd;
+      this.router.navigate(['details-production'], {
+        state: {
+          enteteProdData: this.formData
+        }
+      })
+    }
   }
 
   createEnteteProduction() {
@@ -95,7 +127,6 @@ export class EnteteProductionComponent {
         this.popUpService.showFail("Erreur serveur");
       }
     });
-    this.showDetailsProdComponent = true;
   }
 
 }

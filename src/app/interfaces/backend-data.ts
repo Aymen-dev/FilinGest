@@ -14,7 +14,7 @@ export interface BackendData {
     machines?: Machine[],
     equipe?: Equipe,
     equipes?: Equipe[],
-    personnel?: Personnel,
+    personnel?: Personnel[],
     titresFil?: TitreFil[],
     detailsProduction?: DetailsProduction[],
 }

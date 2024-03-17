@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BackendResponse } from '../interfaces/backend-response';
 
 
 @Injectable({
@@ -7,11 +8,15 @@ import { Injectable } from '@angular/core';
 })
 export class PersonnelService {
 
-  url = "http://localhost:8000/api/personnel";
+  baseUrl = "http://localhost:8000/api/personnel";
 
   constructor(private http: HttpClient) { }
 
-  getListePersonnelBySearchTerm(searchTerm: string) {
-    return this.http.get<any>(this.url + '/' + searchTerm);
+  getListePersonnel() {
+    return this.http.get<BackendResponse>(this.baseUrl);
+  }
+
+  getListePersonnelByEquipe(idEquipe: number) {
+    return this.http.get<BackendResponse>(this.baseUrl + '/equipe/' + idEquipe);
   }
 }

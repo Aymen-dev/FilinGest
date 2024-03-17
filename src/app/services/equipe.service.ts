@@ -8,13 +8,20 @@ import { BackendResponse } from '../interfaces/backend-response';
 export class EquipeService {
 
 
-  url = "http://localhost:8000/api/equipes";
+  baseUrl = "http://localhost:8000/api/equipes";
 
   constructor(private http: HttpClient) { }
 
-  getListeEquipes(){
-    return this.http.get<BackendResponse>(this.url);
+  getListeEquipes() {
+    return this.http.get<BackendResponse>(this.baseUrl);
   }
 
+  getListeEquipesByDep(idDep: number) {
+    return this.http.get<BackendResponse>(this.baseUrl + '/dep/' + idDep);
+  }
+
+  getEquipeById(idEquipe: number) {
+    return this.http.get<BackendResponse>(this.baseUrl + '/' + idEquipe);
+  }
 
 }
