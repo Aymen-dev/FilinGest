@@ -23,16 +23,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class EnteteProductionComponent {
 
   formData = {
-    equipe: '',
-    departement: '',
-    superviseur: '',
-    team_leader: '',
+    idEquipe: 0,
+    idDepartement: 0,
+    idSuperviseur: 0,
+    idTeamLeader: 0,
     date_production: ''
   };
 
 
   dateProd: string = '';
-  createEnteteResponse: BackendResponse;
   equipes: Array<Equipe> | undefined = [];
   departements: Array<Departement> | undefined = [];
   listePersonnel: Array<Personnel> = [];
@@ -40,8 +39,10 @@ export class EnteteProductionComponent {
   listeTeamLeaders: Array<Personnel> = [];
 
 
-  constructor(private route: ActivatedRoute, private router: Router, private personnelService: PersonnelService, private prodService: ProductionService, private depService: DepartementService, private equipeService: EquipeService, private popUpService: PopUpService) {
-    this.createEnteteResponse = { message: '', data: {} };
+  constructor(private route: ActivatedRoute, private router: Router,
+    private personnelService: PersonnelService, private prodService: ProductionService,
+    private depService: DepartementService, private equipeService: EquipeService,
+    private popUpService: PopUpService) {
     this.loadListeDepartements();
     const today = new Date();
     this.dateProd = today.toISOString().slice(0, 10);
@@ -101,32 +102,22 @@ export class EnteteProductionComponent {
   submitForm(form: NgForm): void {
     if (!form.valid)
       this.popUpService.showFail("Tous les details sont requises")
-    else{
+    else {
       this.formData.date_production = this.dateProd;
-      this.router.navigate(['details-production'], {
-        state: {
-          enteteProdData: this.formData
+      this.prodService.getListeEntetesProduction().subscribe({
+        next: response => {
+          this.router.navigate(['details-production'], {
+            state: {
+              enteteProdData: this.formData,
+              action: 'add',
+              entete: response.data.entetesProduction ? response.data.entetesProduction!.length + 1 : 1
+            }
+          })
+        },
+        error: err => {
+          console.log(err);
         }
       })
     }
   }
-
-  createEnteteProduction() {
-    this.formData.date_production = this.dateProd;
-    this.prodService.saveEnteteProduction(this.formData).subscribe({
-      next: (response: BackendResponse) => {
-        this.createEnteteResponse = response;
-        this.router.navigate(['details-production'], {
-          state: {
-            response: this.createEnteteResponse
-          }
-        })
-      },
-      error: (error: any) => {
-        console.error("Error:", error);
-        this.popUpService.showFail("Erreur serveur");
-      }
-    });
-  }
-
 }
