@@ -6,12 +6,12 @@ export class DetailsProduction {
     id: number;
     production: number;
     nb_levata: number;
-    entete: EnteteProduction;
-    machine: Machine;
-    titre_fil: TitreFil;
+    entete: number;
+    machine: number;
+    titre_fil: number | null;
     objectif_production: number;
 
-    constructor(id: number, production: number, nb_levata: number, entete: EnteteProduction, machine: Machine, titre_fil: TitreFil, objectif_production: number) {
+    constructor(id: number, production: number, nb_levata: number, entete: number, machine: number, titre_fil: number, objectif_production: number) {
         this.id = id;
         this.production = production;
         this.nb_levata = nb_levata;

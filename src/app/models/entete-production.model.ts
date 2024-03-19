@@ -1,13 +1,10 @@
-import { Departement } from "./departement.model";
-import { Equipe } from "./equipe.model";
-
 export class EnteteProduction {
     id_entete: number;
-    equipe: Equipe;
-    departement: Departement;
+    equipe: number;
+    departement: number;
     date_production: Date;
 
-    constructor (id: number, equipe: Equipe, dep: Departement, dateProd: Date) {
+    constructor (id: number, equipe: number, dep: number, dateProd: Date) {
         this.id_entete = id;
         this.equipe = equipe;
         this.departement = dep;
