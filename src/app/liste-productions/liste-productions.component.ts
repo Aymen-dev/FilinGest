@@ -5,6 +5,8 @@ import { EnteteProduction } from '../models/entete-production.model';
 import { PopUpService } from '../services/pop-up.service';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
+import { Equipe } from '../models/equipe.model';
+import { Departement } from '../models/departement.model';
 
 
 
@@ -18,7 +20,8 @@ import { Router } from '@angular/router';
 
 export class ListeProductionsComponent {
   listeProd: Array<EnteteProduction> | undefined = [];
-  responseMessage: string = '';
+  equipes: Array<Equipe> = [];
+  departements: Array<Departement> = [];
   showDetailsProduction: boolean = false;
   setDetailsProductionVisible: boolean = false;
 
@@ -30,8 +33,9 @@ export class ListeProductionsComponent {
     this.prodService.getListeEntetesProduction().subscribe({
       next: response => {
         if (response.data.entetesProduction) {
-          this.listeProd = (response as BackendResponse).data.entetesProduction;
-          this.responseMessage = (response as BackendResponse).message;
+          this.listeProd = response.data.entetesProduction;
+          this.equipes = response.data.equipes!;
+          this.departements = response.data.departements!
         }
         else {
           this.popUpService.showInfo('Liste vide');
@@ -65,9 +69,26 @@ export class ListeProductionsComponent {
       next: response => {
         this.router.navigate(['details-production'], {
           state: {
-            response: response
+            response: response,
+            action: 'edit',
+            entete: id
           }
         })
+      },
+      error: err => {
+        this.popUpService.showFail('Une erreur s\'est produite, réessayez plus tard ' + err.error.message);
+      }
+    })
+  }
+
+  viewProduction(id: number) {
+    this.prodService.getDetailsProductionByEnteteId(id).subscribe({
+      next: response => {
+        this.router.navigate(['view-details-production'], {
+          state: {
+            response: response
+          }
+        });
       },
       error: err => {
         this.popUpService.showFail('Une erreur s\'est produite, réessayez plus tard ' + err.error.message);
@@ -96,9 +117,9 @@ export class ListeProductionsComponent {
   getPropertyValue(item: EnteteProduction, property: string): string {
     switch (property) {
       case 'equipe':
-        return item.equipe.nom_equipe;
+        return this.equipes.find(equipe => equipe.id_equipe === item.equipe)?.nom_equipe || '';
       case 'departement':
-        return item.departement.nom_departement;
+        return this.departements.find(dep => dep.id_departement === item.departement)?.nom_departement || '';
       case 'date':
         return new Date(item.date_production).toISOString();
       default:
@@ -182,18 +203,5 @@ export class ListeProductionsComponent {
   
 
 
-  viewProduction(id: number) {
-    this.prodService.getDetailsProductionByEnteteId(id).subscribe({
-      next: response => {
-        this.router.navigate(['view-details-production'], {
-          state: {
-            response: response
-          }
-        });
-      },
-      error: err => {
-        this.popUpService.showFail('Une erreur s\'est produite, réessayez plus tard ' + err.error.message);
-      }
-    })
-  }
+  
 }

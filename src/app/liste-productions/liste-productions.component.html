@@ -62,8 +62,8 @@
         @for(prod of listeProd; track $index){
         <tr>
             <th scope="row">{{prod.id_entete}}</th>
-            <td>{{prod.equipe.nom_equipe}}</td>
-            <td>{{prod.departement.nom_departement}}</td>
+            <td>{{equipes[$index].nom_equipe}}</td>
+            <td>{{departements[$index].nom_departement}}</td>
             <td>{{prod.date_production}}</td>
             <td class="d-flex justify-content-center gap-2 align-items-center">
                 <button class="visibility" (click)="viewProduction(prod.id_entete)">
