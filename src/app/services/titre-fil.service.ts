@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BackendResponse } from '../interfaces/backend-response';
 
 
 @Injectable({
@@ -12,7 +13,7 @@ export class TitreFilService {
   constructor(private http: HttpClient) { }
 
   getTitresFil(){
-    return this.http.get(this.baseUrl);
+    return this.http.get<BackendResponse>(this.baseUrl);
   }
   
 }
