@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 */
 
 Route::prefix('/equipes')->group(function () {
+    Route::get('/dep/{id}', 'App\Http\Controllers\EquipeController@getListeEquipesByDep');
     Route::get('/', 'App\Http\Controllers\EquipeController@index');
     Route::get('{id}', 'App\Http\Controllers\EquipeController@getById');
     Route::post('add', 'App\Http\Controllers\EquipeController@store');
@@ -37,6 +38,7 @@ Route::prefix('/equipes')->group(function () {
 
 Route::prefix('/personnel')->group(function () {
     Route::get('/', 'App\Http\Controllers\PersonnelController@index');
+    Route::get('/equipe/{id}', 'App\Http\Controllers\PersonnelController@getListePersonnelByEquipe');
     Route::get('{name}', 'App\Http\Controllers\PersonnelController@getPersonnelByName');
 });
 
@@ -47,6 +49,7 @@ Route::prefix('/machines')->group(function () {
 
 Route::prefix('/departements')->group(function () {
     Route::get('/', 'App\Http\Controllers\DepartementController@index');
+    Route::get('{id}', 'App\Http\Controllers\DepartementController@show');
 });
 
 Route::prefix('/production')->group(function () {

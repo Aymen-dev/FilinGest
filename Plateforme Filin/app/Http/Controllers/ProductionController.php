@@ -20,9 +20,9 @@ class ProductionController extends Controller
     public function createEnteteProduction(Request $request)
     {
         $entete = new EnteteProduction();
-        $entete->equipe = $request->equipe;
+        $entete->equipe = $request->idEquipe;
         $entete->date_production = $request->date_production;
-        $entete->departement = $request->departement;
+        $entete->departement = $request->idDepartement;
 
         $entete->save();
         $dep = Departement::find($request->departement);
@@ -48,6 +48,8 @@ class ProductionController extends Controller
                 $titre = TitreFil::find($detail['titre']);
                 if ($titre)
                     $objectif_prod = $titre->nb_levata * $machine->caract_numerique;
+                else
+                    $objectif_prod = 0;
             } else
                 $objectif_prod = 0;
 
@@ -84,6 +86,7 @@ class ProductionController extends Controller
         }
         return $production;
     }
+
     public function updateDetailsProduction(Request $request)
     {
         $details = $request->productionDetails;
@@ -118,19 +121,17 @@ class ProductionController extends Controller
         if ($prods->isEmpty())
             return response()->json(['message' => 'Liste des productions vide', 'data' => []], 202);
 
-        $entetes = [];
+        $equipes = [];
+        $departements = [];
         foreach ($prods as $production) {
-            $details = [
-                'id_entete' => $production->id_entete,
-                'equipe' => Equipe::find($production->equipe),
-                'departement' => Departement::find($production->departement),
-                'date_production' => $production->date_production,
-            ];
-            array_push($entetes, $details);
+            array_push($equipes, Equipe::find($production->equipe));
+            array_push($departements, Departement::find($production->departement));    
         }
 
         return response()->json(['message' => 'Liste des productions retrouvée', 'data' => [
-            'entetesProduction' => $entetes
+            'entetesProduction' => $prods,
+            'equipes' => $equipes,
+            'departements' => $departements
         ]], 200);
     }
 
@@ -143,12 +144,10 @@ class ProductionController extends Controller
             array_push($machines, $machine);
         }
         $entete = EnteteProduction::find($id);
-        $dep = Departement::find($entete->departement);
 
         $data = [
             'machines' => $machines,
             'enteteProduction' => $entete,
-            'departement' => $dep,
             'detailsProduction' => $records
         ];
         return response()->json(['message' => 'Details retrouvées', 'data' => $data], 200);
