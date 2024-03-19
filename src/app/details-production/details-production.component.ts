@@ -25,7 +25,7 @@ export class DetailsProductionComponent implements OnInit {
   machines: Array<Machine> = [];
   departement: Departement = new Departement();
   equipe: Equipe = new Equipe();
-  dateProduction: Date = new Date();
+  dateProduction = '';
   titresFil: Array<TitreFil> = [];
   inputLevata: Array<number> = [];
   inputTitre: Array<number> = [];
@@ -49,9 +49,7 @@ export class DetailsProductionComponent implements OnInit {
     this.enteteProdData = history.state.enteteProdData;
     this.response = history.state.response;
     this.getEntities();
-    this.checkDepartment();
     this.setInputLevata();
-    this.getTitres();
   }
 
 
@@ -69,17 +67,21 @@ export class DetailsProductionComponent implements OnInit {
     if (this.enteteProdData) {
       idDep = this.enteteProdData.idDepartement;
       idEquipe = this.enteteProdData.idEquipe;
-      this.dateProduction = new Date(this.enteteProdData.date_production);
+      this.dateProduction = this.enteteProdData.date_production;
     }
     else {
       idDep = this.response.data.enteteProduction!.departement;
       idEquipe = this.response.data.enteteProduction!.equipe;
-      this.dateProduction = this.response.data.enteteProduction!.date_production;
+      this.dateProduction = new Date(this.response.data.enteteProduction!.date_production).toISOString().slice(0, 10);
     }
 
     this.depService.getDepartementById(idDep).subscribe({
       next: response => {
         this.departement = response.data.departement!;
+        if (this.departement.id_departement != 4
+          && this.departement.id_departement != 5
+          && this.departement.id_departement != 6)
+          this.isDepFilature = true;
         this.machineService.getMachinesByDep(this.departement.id_departement).subscribe({
           next: response => {
             this.machines = response.data.machines!
@@ -93,6 +95,7 @@ export class DetailsProductionComponent implements OnInit {
         console.log(err);
       }
     });
+
     this.equipeService.getEquipeById(idEquipe).subscribe({
       next: response => {
         this.equipe = response.data.equipe!
@@ -101,16 +104,18 @@ export class DetailsProductionComponent implements OnInit {
         console.log(err);
       }
     });
+
+    this.titreService.getTitresFil().subscribe({
+      next: response => {
+        this.titresFil = response.data.titresFil!
+      },
+      error: err => {
+        console.log(err);
+      }
+    });
   }
 
-  checkDepartment() {
-    if (this.departement) {
-      if (this.departement.id_departement != 4
-        && this.departement.id_departement != 5
-        && this.departement.id_departement != 6)
-        this.isDepFilature = true;
-    }
-  }
+
 
   setInputLevata() {
     console.log(this.response)
@@ -129,14 +134,6 @@ export class DetailsProductionComponent implements OnInit {
 
   }
 
-
-  getTitres() {
-    this.titreService.getTitresFil().subscribe(
-      response => {
-        this.titresFil = (response as any).data;
-      }
-    )
-  }
 
   ajouterPanne() {
 
@@ -168,8 +165,8 @@ export class DetailsProductionComponent implements OnInit {
             }
           )
         },
-        error: (error: any) => {
-          console.error("Error:", error);
+        error: err => {
+          console.error(err);
           this.popUpService.showFail("Erreur serveur");
         }
       });
