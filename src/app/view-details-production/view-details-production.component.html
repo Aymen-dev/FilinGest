@@ -1,7 +1,10 @@
 <div class="card card-body mb-3">
-    <h2>Details de production</h2>
-    <h5>Departement {{ dep?.nom_departement }}</h5>
-    <span class="text-body-secondary mb-0">Date: {{ entete?.date_production }}</span>
+    <h2 style="font-weight: bold;" class="mb-3">Details de production du {{ date }}</h2>
+    <h5>Departement 
+        <span style="text-decoration: underline;">{{ dep?.nom_departement }}</span>
+        ->
+        <span style="font-weight: bold;">{{ equipe?.nom_equipe }}</span>
+    </h5>
 </div>
 <table class="table table-hover table-striped text-center">
     <thead>
