@@ -4,6 +4,7 @@ import { Departement } from '../models/departement.model';
 import { Machine } from '../models/machine.model';
 import { DetailsProduction } from '../models/details-production.model';
 import { EnteteProduction } from '../models/entete-production.model';
+import { DepartementService } from '../services/departement.service';
 
 @Component({
   selector: 'app-view-details-production',
@@ -20,7 +21,7 @@ export class ViewDetailsProductionComponent implements OnInit {
   details?: Array<DetailsProduction>;
   entete?: EnteteProduction;
 
-  constructor() {
+  constructor(private depService: DepartementService) {
   }
 
   ngOnInit(): void {
@@ -29,7 +30,14 @@ export class ViewDetailsProductionComponent implements OnInit {
   }
 
   getResponseData() {
-    this.dep = this.response.data.departement;
+    this.depService.getDepartementById(this.response.data.enteteProduction!.departement).subscribe({
+      next: response => {
+        this.dep = response.data.departement;
+      },
+      error: err => {
+        console.log(err);
+      }
+    })
     this.machines = this.response.data.machines;
     this.details = this.response.data.detailsProduction;
     this.entete = this.response.data.enteteProduction;
