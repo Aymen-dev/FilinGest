@@ -2,7 +2,7 @@
 <div class="header card card-body mb-3">
     <div class="col-sm-10">
         <div class="d-flex flex-column gap-1">
-            <h2 class="mb-3">Liste des productions</h2>
+            <h2 class="mb-3" style="font-weight: bold;">Liste des productions</h2>
             <div class="d-flex flex-column mb-1">
                 <div class="d-flex flex-column gap-2 mb-3">
                     <p class="mb-0 text-body-secondary" style="text-decoration: underline;">Operations</p>
@@ -64,7 +64,7 @@
             <th scope="row">{{prod.id_entete}}</th>
             <td>{{equipes[$index].nom_equipe}}</td>
             <td>{{departements[$index].nom_departement}}</td>
-            <td>{{prod.date_production}}</td>
+            <td>{{formattedDates[$index]}}</td>
             <td class="d-flex justify-content-center gap-2 align-items-center">
                 <button class="visibility" (click)="viewProduction(prod.id_entete)">
                     <span class="material-symbols-outlined">

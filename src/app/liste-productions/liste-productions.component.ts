@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { Equipe } from '../models/equipe.model';
 import { Departement } from '../models/departement.model';
+import { DateService } from '../services/date.service';
 
 
 
@@ -20,12 +21,15 @@ import { Departement } from '../models/departement.model';
 
 export class ListeProductionsComponent {
   listeProd: Array<EnteteProduction> | undefined = [];
+  formattedDates: Array<string> = [];
   equipes: Array<Equipe> = [];
   departements: Array<Departement> = [];
   showDetailsProduction: boolean = false;
   setDetailsProductionVisible: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router, private prodService: ProductionService, private popUpService: PopUpService) {
+  constructor(private route: ActivatedRoute, private router: Router, 
+    private prodService: ProductionService, private popUpService: PopUpService,
+    private dateService: DateService) {
     this.loadListeProd();
   }
 
@@ -33,7 +37,10 @@ export class ListeProductionsComponent {
     this.prodService.getListeEntetesProduction().subscribe({
       next: response => {
         if (response.data.entetesProduction) {
-          this.listeProd = response.data.entetesProduction;
+          this.listeProd = response.data.entetesProduction.map((entete) => {
+            this.formattedDates.push(this.dateService.formatDate(new Date(entete.date_production)));
+            return entete;
+          });
           this.equipes = response.data.equipes!;
           this.departements = response.data.departements!
         }
