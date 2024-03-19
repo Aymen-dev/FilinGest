@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Models\Departement;
 use App\Models\Equipe;
 use \Illuminate\Http\Request;
 
@@ -83,6 +83,17 @@ class EquipeController extends Controller
 
         return response()->json(['message' => 'Equipe supprimée', 'data' => [
             'equipes' => Equipe::all()
+        ]], 200);
+    }
+
+    public function getListeEquipesByDep($id)
+    {
+        $departement = Departement::find( $id );
+        $equipes = Equipe::where('departement', $id)->get();
+        if ($equipes->isEmpty())
+            return response()->json()(['message' => 'Liste vide', 'data' => []], 200);
+        return response()->json(['message'=> 'Liste retrouvée', 'data' => [
+            'equipes' => $equipes
         ]], 200);
     }
 }
