@@ -22,25 +22,24 @@ import { EquipeService } from '../services/equipe.service';
 })
 export class DetailsProductionComponent implements OnInit {
 
-  machines: Array<Machine> | undefined = [];
-  departement: Departement | undefined;
-  equipe: Equipe | undefined;
+  machines: Array<Machine> = [];
+  departement: Departement = new Departement();
+  equipe: Equipe = new Equipe();
+  dateProduction: Date = new Date();
   titresFil: Array<TitreFil> = [];
   inputLevata: Array<number> = [];
   inputTitre: Array<number> = [];
   nbLevatas: Array<number> = [];
+  response!: BackendResponse;
+  isDepFilature: boolean = false;
 
   enteteProdData = {
-    equipe: 0,
-    departement: 0,
+    idEquipe: 0,
+    idDepartement: 0,
     superviseur: 0,
     team_leader: 0,
     date_production: ''
   };
-
-  response!: BackendResponse;
-
-  isDepFilature: boolean = false;
 
   formData: any = {
     productionDetails: []
@@ -48,10 +47,9 @@ export class DetailsProductionComponent implements OnInit {
 
   ngOnInit(): void {
     this.enteteProdData = history.state.enteteProdData;
-    console.log(this.enteteProdData)
-    this.getMachines();
+    this.response = history.state.response;
+    this.getEntities();
     this.checkDepartment();
-    this.init();
     this.setInputLevata();
     this.getTitres();
   }
@@ -64,32 +62,58 @@ export class DetailsProductionComponent implements OnInit {
 
   }
 
-  init() {
-    this.depService.getDepartementById(this.enteteProdData.departement).subscribe({
+  getEntities() {
+    let idDep: number;
+    let idEquipe: number;
+
+    if (this.enteteProdData) {
+      idDep = this.enteteProdData.idDepartement;
+      idEquipe = this.enteteProdData.idEquipe;
+      this.dateProduction = new Date(this.enteteProdData.date_production);
+    }
+    else {
+      idDep = this.response.data.enteteProduction!.departement;
+      idEquipe = this.response.data.enteteProduction!.equipe;
+      this.dateProduction = this.response.data.enteteProduction!.date_production;
+    }
+
+    this.depService.getDepartementById(idDep).subscribe({
       next: response => {
-        this.departement = response.data.departement
+        this.departement = response.data.departement!;
+        this.machineService.getMachinesByDep(this.departement.id_departement).subscribe({
+          next: response => {
+            this.machines = response.data.machines!
+          },
+          error: err => {
+            console.log(err);
+          }
+        });
       },
       error: err => {
         console.log(err);
       }
-    })
-    this.equipeService.getEquipeById(this.enteteProdData.equipe).subscribe({
+    });
+    this.equipeService.getEquipeById(idEquipe).subscribe({
       next: response => {
-        this.equipe = response.data.equipe
+        this.equipe = response.data.equipe!
       },
       error: err => {
         console.log(err);
       }
-    })
+    });
   }
 
   checkDepartment() {
-    if (this.enteteProdData.departement)
-      if (this.enteteProdData.departement != 4 && this.enteteProdData.departement != 5 && this.enteteProdData.departement != 6)
+    if (this.departement) {
+      if (this.departement.id_departement != 4
+        && this.departement.id_departement != 5
+        && this.departement.id_departement != 6)
         this.isDepFilature = true;
+    }
   }
 
   setInputLevata() {
+    console.log(this.response)
     if (this.response)
       if (this.response.data.detailsProduction) {
         const detailsProduction = this.response.data.detailsProduction as DetailsProduction[];
@@ -102,18 +126,9 @@ export class DetailsProductionComponent implements OnInit {
           this.inputLevata.push(nb);
         });
       }
+
   }
 
-  getMachines() {
-    this.machineService.getMachinesByDep(this.enteteProdData.departement).subscribe({
-      next: response => {
-        this.machines = response.data.machines
-      },
-      error: err => {
-        console.log(err);
-      }
-    })
-  }
 
   getTitres() {
     this.titreService.getTitresFil().subscribe(
@@ -129,43 +144,42 @@ export class DetailsProductionComponent implements OnInit {
 
 
   createDetailsProduction(formData: any) {
-    this.prodService.saveEnteteProduction(this.enteteProdData).subscribe({
-      next: (response: BackendResponse) => {
-        this.response = response;
-        if (this.machines)
-          this.machines.forEach(machine => {
-            const productionDetail = {
-              nbLevata: this.inputLevata[this.machines!.indexOf(machine)],
-              id_entete: this.response.data.enteteProduction?.id_entete,
-              numero_machine: machine.numero,
-              systeme: machine.systeme,
-              titre: this.inputTitre.length != 0 ? this.inputTitre[this.machines!.indexOf(machine)] : null
-            };
-            this.formData.productionDetails.push(productionDetail);
-          });
-
-
-        if (!this.response.data.detailsProduction) {
+    console.log(this.enteteProdData);
+    console.log(history.state)
+    this.machines.forEach(machine => {
+      const productionDetail = {
+        nbLevata: this.inputLevata[this.machines!.indexOf(machine)],
+        id_entete: history.state.entete,
+        numero_machine: machine.numero,
+        systeme: machine.systeme,
+        titre: this.inputTitre.length != 0 ? this.inputTitre[this.machines!.indexOf(machine)] : null
+      };
+      this.formData.productionDetails.push(productionDetail);
+    });
+    if (history.state.action == 'add')
+      this.prodService.saveEnteteProduction(this.enteteProdData).subscribe({
+        next: (response: BackendResponse) => {
+          this.response = response;
+          console.log(this.formData)
           this.prodService.saveDetailsProduction(this.formData).subscribe(
             response => {
               this.popUpService.showSuccess(response.message);
               this.router.navigate(['liste-productions']);
             }
           )
+        },
+        error: (error: any) => {
+          console.error("Error:", error);
+          this.popUpService.showFail("Erreur serveur");
         }
-        else {
-          this.prodService.editDetailsProduction(this.formData, this.formData.productionDetails[0].id_entete).subscribe(
-            response => {
-              this.popUpService.showSuccess(response.message);
-              this.router.navigate(['liste-productions']);
-            }
-          )
+      });
+    else {
+      this.prodService.editDetailsProduction(this.formData, history.state.entete).subscribe(
+        response => {
+          this.popUpService.showSuccess(response.message);
+          this.router.navigate(['liste-productions']);
         }
-      },
-      error: (error: any) => {
-        console.error("Error:", error);
-        this.popUpService.showFail("Erreur serveur");
-      }
-    });
+      )
+    }
   }
 }
