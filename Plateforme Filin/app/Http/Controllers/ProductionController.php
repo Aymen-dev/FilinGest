@@ -148,7 +148,8 @@ class ProductionController extends Controller
         $data = [
             'machines' => $machines,
             'enteteProduction' => $entete,
-            'detailsProduction' => $records
+            'detailsProduction' => $records,
+            'equipe' => Equipe::find($entete->equipe)
         ];
         return response()->json(['message' => 'Details retrouvées', 'data' => $data], 200);
     }
