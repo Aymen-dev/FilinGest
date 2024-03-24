@@ -1,16 +1,11 @@
 import { Component } from '@angular/core';
 import { ProductionService } from '../services/production.service';
-import { BackendResponse } from '../interfaces/backend-response';
-import { EnteteProduction } from '../models/entete-production.model';
 import { PopUpService } from '../services/pop-up.service';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { Equipe } from '../models/equipe.model';
 import { Departement } from '../models/departement.model';
-import { DateService } from '../services/date.service';
-
-
-
+import { SortingService } from '../services/sorting.service';
 
 
 @Component({
@@ -20,33 +15,71 @@ import { DateService } from '../services/date.service';
 })
 
 export class ListeProductionsComponent {
-  listeProd: Array<EnteteProduction> | undefined = [];
+  listeProd: { id_entete: number, equipeName: string, depName: string, date: Date }[] = [];
   formattedDates: Array<string> = [];
   equipes: Array<Equipe> = [];
   departements: Array<Departement> = [];
-  showDetailsProduction: boolean = false;
-  setDetailsProductionVisible: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router, 
+  constructor(private route: ActivatedRoute, private router: Router,
     private prodService: ProductionService, private popUpService: PopUpService,
-    private dateService: DateService) {
+    private sortingService: SortingService) {
     this.loadListeProd();
   }
 
-  loadListeProd() {
+  sortList(colIndex: number): void {
+    let column: 'equipeName' | 'depName' | 'date';
+    switch (colIndex) {
+      case 1:
+        column = 'equipeName';
+        break;
+      case 2:
+        column = 'depName';
+        break;
+      case 3:
+        column = 'date';
+        break;
+    }
+    if (this.sortingService.isSorted(this.listeProd, column!, 'ASC'))
+      this.listeProd = this.sortingService.sortList(this.listeProd, column!, 'DESC');
+
+    else if (this.sortingService.isSorted(this.listeProd, column!, 'DESC'))
+      this.listeProd = this.sortingService.sortList(this.listeProd, column!, 'ASC');
+
+    else
+      this.listeProd = this.sortingService.sortList(this.listeProd, column!, 'ASC');
+
+  }
+
+  isSorted(list: { id_entete: number, equipeName: string, depName: string, date: Date }[],
+    column: 'id_entete' | 'equipeName' | 'depName' | 'date',
+    sortOrder: 'ASC' | 'DESC'): boolean {
+    return this.sortingService.isSorted(list, column, sortOrder);
+  }
+
+  loadListeProd(): void {
+    this.listeProd = [];
     this.prodService.getListeEntetesProduction().subscribe({
       next: response => {
         if (response.data.entetesProduction) {
-          this.listeProd = response.data.entetesProduction.map((entete) => {
-            this.formattedDates.push(this.dateService.formatDate(new Date(entete.date_production)));
-            return entete;
-          });
+          let equipe: Equipe,
+            departement: Departement,
+            prod: { id_entete: number, equipeName: string, depName: string, date: Date };
           this.equipes = response.data.equipes!;
-          this.departements = response.data.departements!
+          this.departements = response.data.departements!;
+          for (let entete of response.data.entetesProduction) {
+            equipe = this.equipes.find(equipe => equipe.id_equipe == entete.equipe)!;
+            departement = this.departements.find(dep => dep.id_departement == entete.departement)!;
+            prod = {
+              id_entete: entete.id_entete,
+              equipeName: equipe!.nom_equipe,
+              depName: departement!.nom_departement,
+              date: entete.date_production
+            }
+            this.listeProd.push(prod)
+          }
         }
         else {
           this.popUpService.showInfo('Liste vide');
-          this.listeProd = undefined;
         }
       },
       error: err => {
@@ -58,7 +91,7 @@ export class ListeProductionsComponent {
     })
   }
 
-  deleteProduction(id: number) {
+  deleteProduction(id: number): void {
     if (confirm('Supprimer cette production ?'))
       this.prodService.deleteEnteteProductionById(id).subscribe({
         next: () => {
@@ -71,7 +104,7 @@ export class ListeProductionsComponent {
       })
   }
 
-  editProduction(id: number) {
+  editProduction(id: number): void {
     this.prodService.getDetailsProductionByEnteteId(id).subscribe({
       next: response => {
         this.router.navigate(['details-production'], {
@@ -88,7 +121,7 @@ export class ListeProductionsComponent {
     })
   }
 
-  viewProduction(id: number) {
+  viewProduction(id: number): void {
     this.prodService.getDetailsProductionByEnteteId(id).subscribe({
       next: response => {
         this.router.navigate(['view-details-production'], {
@@ -102,113 +135,4 @@ export class ListeProductionsComponent {
       }
     })
   }
-
-  isSorted(listeProd: Array<EnteteProduction>, entity: string, sortOrder: 'ASC' | 'DESC'): boolean {
-    const sortedList = this.sortList(listeProd, entity, sortOrder);
-    return this.arraysAreEqual(listeProd, sortedList);
-  }
-
-  sortList(listeProd: Array<EnteteProduction>, entity: string, sortOrder: 'ASC' | 'DESC'): Array<EnteteProduction> {
-    return listeProd.slice().sort((a, b) => {
-      const aValue = this.getPropertyValue(a, entity);
-      const bValue = this.getPropertyValue(b, entity);
-
-      if (sortOrder === 'ASC') {
-        return aValue.localeCompare(bValue);
-      } else {
-        return bValue.localeCompare(aValue);
-      }
-    });
-  }
-
-  getPropertyValue(item: EnteteProduction, property: string): string {
-    switch (property) {
-      case 'equipe':
-        return this.equipes.find(equipe => equipe.id_equipe === item.equipe)?.nom_equipe || '';
-      case 'departement':
-        return this.departements.find(dep => dep.id_departement === item.departement)?.nom_departement || '';
-      case 'date':
-        return new Date(item.date_production).toISOString();
-      default:
-        return '';
-    }
-  }
-
-  arraysAreEqual(arr1: Array<EnteteProduction>, arr2: Array<EnteteProduction>): boolean {
-    if (arr1.length !== arr2.length) {
-      return false;
-    }
-
-    for (let i = 0; i < arr1.length; i++) {
-      if (arr1[i] !== arr2[i]) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  sort(entity: string, sortOrder: 'ASC' | 'DESC'): void {
-    if (this.listeProd) {
-      this.listeProd = this.sortList(this.listeProd, entity, sortOrder);
-    }
-  }
-
-  sortColumn(columnIndex: number) {
-    if (!this.listeProd) return;
-
-    let entity: string;
-    let sortOrder: 'ASC' | 'DESC';
-
-    switch (columnIndex) {
-      case 1:
-        entity = 'equipe';
-        break;
-      case 2:
-        entity = 'departement';
-        break;
-      case 3:
-        entity = 'date';
-        break;
-      default:
-        return;
-    }
-
-    if (this.isSorted(this.listeProd, entity, 'DESC')) {
-      sortOrder = 'ASC';
-    } else if (this.isSorted(this.listeProd, entity, 'ASC')) {
-      sortOrder = 'DESC';
-    } else {
-      sortOrder = 'ASC';
-    }
-
-    this.sort(entity, sortOrder);
-  }
-
-  isAscending(columnIndex: number): boolean {
-    const entity = this.getEntityForColumn(columnIndex);
-    return this.isSorted(this.listeProd!, entity, 'ASC');
-  }
-  
-  isDescending(columnIndex: number): boolean {
-    const entity = this.getEntityForColumn(columnIndex);
-    return this.isSorted(this.listeProd!, entity, 'DESC');
-  }
-  
-  getEntityForColumn(columnIndex: number): string {
-    switch (columnIndex) {
-      case 1:
-        return 'equipe';
-      case 2:
-        return 'departement';
-      case 3:
-        return 'date';
-      default:
-        return '';
-    }
-  }
-  
-
-
-  
 }
