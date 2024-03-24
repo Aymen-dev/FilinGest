@@ -20,20 +20,16 @@ table {
     border: 1px solid #3b5998;
 }
 
-th.thead {
-    background-color: #3b589878;
-}
-
-th {
-    width: 10%;
-}
-
 .form-check-input, select {
     border: 1px solid #176B87;
 }
 
 input {
     font-size: 20px;
+}
+
+td.thead {
+    width: 30%;
 }
 
 

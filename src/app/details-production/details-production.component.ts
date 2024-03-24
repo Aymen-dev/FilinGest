@@ -118,7 +118,6 @@ export class DetailsProductionComponent implements OnInit {
 
 
   setInputLevata() {
-    console.log(this.response)
     if (this.response)
       if (this.response.data.detailsProduction) {
         const detailsProduction = this.response.data.detailsProduction as DetailsProduction[];
