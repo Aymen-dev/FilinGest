@@ -1,6 +1,6 @@
 <div class="card card-body mb-3">
-    <h2 style="font-weight: bold;" class="mb-3">Details de production du {{ date }}</h2>
-    <h5>Departement 
+    <h3 class="mb-3">Details de production du {{ date }}</h3>
+    <h5>Departement
         <span style="text-decoration: underline;">{{ dep?.nom_departement }}</span>
         ->
         <span style="font-weight: bold;">{{ equipe?.nom_equipe }}</span>
@@ -11,7 +11,9 @@
         <tr>
             <td scope="col" class="thead">#</td>
             <td scope="col" class="thead">Machine</td>
+            @if(machines![0].systeme != 0){
             <td scope="col" class="thead">Systeme</td>
+            }
             <td scope="col" class="thead">Poduction en Kg</td>
             <td scope="col" class="thead">Nb Levata</td>
             <td scope="col" class="thead">Objectif Production</td>
@@ -21,11 +23,9 @@
         @for(detail of details; track $index){
         <tr>
             <th scope="row">{{detail.id}}</th>
+
             <td>{{machines![$index].nom_machine}}</td>
-            @if(machines![$index].systeme == 0){
-            <td>-</td>
-            }
-            @else {
+            @if(machines![0].systeme != 0){
             <td>{{machines![$index].systeme}}</td>
             }
             <td>{{detail.production}}</td>
