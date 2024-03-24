@@ -69,15 +69,20 @@
         <table class="table table-bordered text-center">
             <thead>
                 <tr>
-                    <th scope="col" class="thead"><span class="">Métier</span></th>
-                    <th scope="col" class="thead">Nb Levata</th>
-                    <th *ngIf="isDepFilature" class="thead" scope="col">Titre Fil</th>
+                    <td scope="col" class="thead"><span class="">Métier</span></td>
+                    <td scope="col" class="thead">Nb Levata</td>
+                    <td *ngIf="isDepFilature" class="thead" scope="col">Titre Fil</td>
                 </tr>
             </thead>
             <tbody>
                 @for (machine of machines; track $index){
                 <tr>
-                    <th scope="row">{{machine.nom_machine}}</th>
+                    @if(machine.systeme != 0){
+                    <th scope="row">{{ machine.nom_machine }} ( Système {{ machine.systeme }} )</th>
+                    }
+                    @else {
+                    <th scope="row">{{ machine.nom_machine }}</th>
+                    }
                     <td class="p-0">
                         <input type="number" required min="1" max="19" class="text-center table-input"
                             name="nbLevata{{$index}}" [(ngModel)]="inputLevata[$index]" #levataInput="ngModel">
@@ -89,7 +94,7 @@
                     </td>
                     <div *ngIf="isDepFilature">
                         <td class="p-0">
-                            <select class=" form-select text-center" [(ngModel)]="inputTitre[$index]"
+                            <select class="form-select text-center" [(ngModel)]="inputTitre[$index]"
                                 name="titre{{$index}}">
                                 <option selected disabled>Selectionner le titre</option>
                                 @for (titre of titresFil; track $index) {
