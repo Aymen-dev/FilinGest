@@ -1,3 +1,6 @@
+import { Departement } from "./departement.model";
+import { Equipe } from "./equipe.model";
+
 export class EnteteProduction {
     id_entete: number;
     equipe: number;
