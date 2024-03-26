@@ -41,7 +41,7 @@ export class DetailsProductionComponent implements OnInit {
     date_production: ''
   };
 
-  formData: any = {
+  formData: { productionDetails: Array<{}> } = {
     productionDetails: []
   };
 
@@ -138,24 +138,26 @@ export class DetailsProductionComponent implements OnInit {
 
   }
 
-
-  createDetailsProduction(formData: any) {
-    console.log(this.enteteProdData);
-    console.log(history.state)
+  setFormData(response: BackendResponse): void {
     this.machines.forEach(machine => {
       const productionDetail = {
         nbLevata: this.inputLevata[this.machines!.indexOf(machine)],
-        id_entete: history.state.entete,
+        id_entete: response.data.enteteProduction?.id_entete,
         numero_machine: machine.numero,
         systeme: machine.systeme,
         titre: this.inputTitre.length != 0 ? this.inputTitre[this.machines!.indexOf(machine)] : null
       };
       this.formData.productionDetails.push(productionDetail);
     });
+  }
+
+  createDetailsProduction(formData: any) {
+    console.log(this.enteteProdData);
+    console.log(history.state)
     if (history.state.action == 'add')
       this.prodService.saveEnteteProduction(this.enteteProdData).subscribe({
         next: (response: BackendResponse) => {
-          this.response = response;
+          this.setFormData(response);
           console.log(this.formData)
           this.prodService.saveDetailsProduction(this.formData).subscribe(
             response => {
@@ -170,8 +172,11 @@ export class DetailsProductionComponent implements OnInit {
         }
       });
     else {
-      this.prodService.editDetailsProduction(this.formData, history.state.entete).subscribe(
+      this.setFormData(history.state.response);
+      console.log(this.formData)
+      this.prodService.editDetailsProduction(this.formData, this.response.data.enteteProduction!.id_entete).subscribe(
         response => {
+          console.log(history.state.entete)
           this.popUpService.showSuccess(response.message);
           this.router.navigate(['liste-productions']);
         }
