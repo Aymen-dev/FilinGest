@@ -110,8 +110,7 @@ export class ListeProductionsComponent {
         this.router.navigate(['details-production'], {
           state: {
             response: response,
-            action: 'edit',
-            entete: id
+            action: 'edit'
           }
         })
       },
