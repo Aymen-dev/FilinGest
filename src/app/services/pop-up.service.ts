@@ -7,24 +7,26 @@ import { NotificationsService } from 'angular2-notifications';
 export class PopUpService {
 
   constructor(private serviceNot: NotificationsService) { }
+
   showSuccess(msg: string): void {
     this.serviceNot.success("Succés", msg, {
       position: ["bottom", "left"],
       timeOut: 5000,
       showProgressBar: true,
       pauseOnHover: true,
-      clickToClose: false,
+      clickToClose: true,
       clickIconToClose: true,
       animate: "fade",
     });
   }
+
   showFail(msg: string): void {
     this.serviceNot.error("Attention", msg, {
       position: ["bottom", "right"],
       timeOut: 5000,
       showProgressBar: true,
       pauseOnHover: true,
-      clickToClose: false,
+      clickToClose: true,
       clickIconToClose: true,
       animate: "fade",
     });
@@ -36,7 +38,7 @@ export class PopUpService {
       timeOut: 5000,
       showProgressBar: true,
       pauseOnHover: true,
-      clickToClose: false,
+      clickToClose: true,
       clickIconToClose: true,
       animate: "fade",
     });
