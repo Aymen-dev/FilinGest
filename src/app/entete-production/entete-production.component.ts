@@ -4,7 +4,6 @@ import { PersonnelService } from '../services/personnel.service';
 import { EquipeService } from '../services/equipe.service';
 import { DepartementService } from '../services/departement.service';
 import { ProductionService } from '../services/production.service';
-import { BackendResponse } from '../interfaces/backend-response';
 import { Equipe } from '../models/equipe.model';
 import { Departement } from '../models/departement.model';
 import { NgForm } from '@angular/forms';
@@ -23,10 +22,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class EnteteProductionComponent {
 
   formData = {
-    idEquipe: 0,
-    idDepartement: 0,
-    idSuperviseur: 0,
-    idTeamLeader: 0,
+    idEquipe: null,
+    idDepartement: null,
+    idSuperviseur: null,
+    idTeamLeader: null,
     date_production: ''
   };
 
@@ -104,18 +103,10 @@ export class EnteteProductionComponent {
       this.popUpService.showFail("Tous les details sont requises")
     else {
       this.formData.date_production = this.dateProd;
-      this.prodService.getListeEntetesProduction().subscribe({
-        next: response => {
-          this.router.navigate(['details-production'], {
-            state: {
-              enteteProdData: this.formData,
-              action: 'add',
-              entete: response.data.entetesProduction ? response.data.entetesProduction!.length + 1 : 1
-            }
-          })
-        },
-        error: err => {
-          console.log(err);
+      this.router.navigate(['details-production'], {
+        state: {
+          enteteProdData: this.formData,
+          action: 'add',
         }
       })
     }
