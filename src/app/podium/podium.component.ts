@@ -1,4 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, SimpleChanges } from '@angular/core';
+import { Departement } from '../models/departement.model';
+import { DepartementService } from '../services/departement.service';
+import { EquipeService } from '../services/equipe.service';
+import { Equipe } from '../models/equipe.model';
+import { Personnel } from '../models/personnel.model';
+import { PersonnelService } from '../services/personnel.service';
 /*import { Chart } from 'chart.js';*/
 
 @Component({
@@ -6,7 +12,7 @@ import { Component } from '@angular/core';
   templateUrl: './podium.component.html',
   styleUrl: './podium.component.css'
 })
-export class PodiumComponent {
+export class PodiumComponent implements OnInit {
   /*ngAfterViewInit() {
     const canvas = document.getElementById('myChart') as HTMLCanvasElement;
     if (!canvas) {
@@ -54,4 +60,78 @@ export class PodiumComponent {
       }
     });
   }*/
+
+  departements: Departement[] = new Array<Departement>;
+  equipes: Equipe[] = new Array<Equipe>;
+  personnel: {
+    pJour: Array<Personnel>,
+    pMidi: Array<Personnel>,
+    pNuit: Array<Personnel>
+  } = {
+      pJour: [],
+      pMidi: [],
+      pNuit: []
+    }
+  selectedDepId: number = 0;
+
+  constructor(private depService: DepartementService,
+    private equipeService: EquipeService,
+    private personnelService: PersonnelService) { }
+
+  ngOnInit() {
+    this.loadListeDepartements();
+  }
+
+  loadListeDepartements() {
+    this.depService.getListeDepartements().subscribe({
+      next: response => {
+        if (response.data.departements)
+          this.departements = response.data.departements;
+      },
+      error: err => {
+        console.error(err);
+      }
+    })
+  }
+
+  getSeanceEquipe(equipeName: string): string {
+    switch (equipeName) {
+      case 'Equipe jour':
+        return 'pJour';
+      case 'Equipe midi':
+        return 'pMidi';
+      case 'Equipe nuit':
+        return 'pNuit';
+      default:
+        return '';
+    }
+  }
+
+  loadListeEquipes(depId: number) {
+    this.equipeService.getListeEquipesByDep(depId).subscribe({
+      next: response => {
+        if (response.data.equipes) {
+          this.equipes = response.data.equipes;
+          this.loadListePersonnel();
+        }
+      },
+      error: err => {
+        console.error(err);
+      }
+    });
+  }
+
+  loadListePersonnel(): void {
+    for (let equipe of this.equipes) {
+      this.personnelService.getListePersonnelByEquipe(equipe.id_equipe).subscribe({
+        next: response => {
+          if (response.data.personnel)
+            this.personnel[this.getSeanceEquipe(equipe.nom_equipe) as keyof typeof this.personnel] = response.data.personnel
+        },
+        error: err => {
+          console.error(err);
+        }
+      })
+    }
+  }
 }
