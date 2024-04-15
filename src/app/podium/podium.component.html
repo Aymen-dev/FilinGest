@@ -3,10 +3,10 @@
         <div class="d-flex flex-column gap-1">
             <h2 class="mb-3">Production mensuelle par équipe</h2>
             <div class="d-flex flex-column">
-                <div class="d-flex flex-column gap-2 mb-3">
-                    <p class="mb-1" style="text-decoration: underline;">Département</p>
+                <div class="d-flex flex-column mb-2">
+                    <p class="mb-1">Département</p>
                     <select class="form-select" required name="departement" [(ngModel)]="selectedDepId"
-                        (change)="loadListeEquipes(selectedDepId)">
+                        (change)="loadPersonnel(selectedDepId); loadProductions(selectedDepId)">
                         <option value=0 selected disabled>Selectionner un departement</option>
                         @for(dep of departements; track $index) {
                         <option [value]="dep.id_departement">{{dep.nom_departement}}</option>
@@ -23,159 +23,152 @@
         <thead>
             <tr>
                 <th class="bg-body-tertiary">Superviseur / Team Leader</th>
-                <th colspan="18" class="bg-body-tertiary">Production (Kg)</th>
-                <th colspan="1" class="bg-body-tertiary">Production Globale (Kg)</th>
+                <th [colSpan]="productions.equipeJour.length / 2" class="bg-body-tertiary">
+                    Production (Kg)
+                </th>
+                <th colspan="1" class="bg-body-tertiary">Production Mensuelle (Kg)</th>
                 <th colspan="1" class="bg-body-tertiary">Production Moyenne (Kg)</th>
             </tr>
         </thead>
         <tbody>
+            @if (selectedDepId){
+            <!-------------------------  Equipe JOUR  --------------------------------->
+            <tr>
+                <td style="background-color: aliceblue;">
+                    <b>Sup.Signor</b>
+                    {{equipes.equipeJour[0].nom_prenom}}
+                </td>
+                @for (prod of productions.equipeJour.slice(0, productions.equipeJour.length / 2); track $index){
+                <td>{{prod}}</td>
+                }
+                <td rowspan="2">{{calculateProdGlobale('jour')}}</td>
+                <td rowspan="2">{{calculateMean(productions.equipeJour)}}</td>
+            </tr>
+            <tr>
+                <td style="background-color: aliceblue;">
+                    <b>Team Leader</b>
+                    {{equipes.equipeJour[1].nom_prenom}}
+                </td>
+                @for (prod of productions.equipeJour.slice(productions.equipeJour.length / 2); track $index){
+                <td>{{prod}}</td>
+                }
+            </tr>
+
+            <!-------------------------  Equipe MIDI  --------------------------------->
+            <tr>
+                <td style="background-color: aliceblue;">
+                    <b>Sup.Signor</b>
+                    {{equipes.equipeMidi[0].nom_prenom}}
+                </td>
+                @for (prod of productions.equipeMidi.slice(0, productions.equipeMidi.length / 2); track $index){
+                <td>{{prod}}</td>
+                }
+                <td rowspan="2">{{calculateProdGlobale('midi')}}</td>
+                <td rowspan="2">{{calculateMean(productions.equipeMidi)}}</td>
+            </tr>
+            <tr>
+                <td style="background-color: aliceblue;">
+                    <b>Team Leader</b>
+                    {{equipes.equipeMidi[1].nom_prenom}}
+                </td>
+                @for (prod of productions.equipeMidi.slice(productions.equipeMidi.length / 2); track $index){
+                <td>{{prod}}</td>
+                }
+            </tr>
+
+            <!-------------------------  Equipe NUIT  --------------------------------->
+            <tr>
+                <td style="background-color: aliceblue;">
+                    <b>Sup.Signor</b>
+                    {{equipes.equipeNuit[0].nom_prenom}}
+                </td>
+                @for (prod of productions.equipeNuit.slice(0, productions.equipeNuit.length / 2); track $index){
+                <td>{{prod}}</td>
+                }
+                <td rowspan="2">{{calculateProdGlobale('nuit')}}</td>
+                <td rowspan="2">{{calculateMean(productions.equipeNuit)}}</td>
+            </tr>
+            <tr>
+                <td style="background-color: aliceblue;">
+                    <b>Team Leader</b>
+                    {{equipes.equipeNuit[1].nom_prenom}}
+                </td>
+                @for (prod of productions.equipeNuit.slice(productions.equipeNuit.length / 2); track $index){
+                <td>{{prod}}</td>
+                }
+            </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+<!--<tr>
+                <td rowspan="2" style="background-color: aliceblue;">
+                    @if(equipes.equipeJour[0]){
+                    <b>Sup.Signor:</b>
+                    {{equipes.equipeJour[0].nom_prenom}}
+                    <br>
+                    <b>Team Leader</b>
+                    {{equipes.equipeJour[1].nom_prenom}}
+                    }
+                </td>
+
+                @if (productions.equipeJour){
+                    @for (prod of productions.equipeJour; track $index){
+                        <td rowspan="2">{{prod}}</td>
+                    }
+                }
+
+                <td rowspan="2">10</td> 
+                <td rowspan="2">10</td>
+            </tr>
+            
+            
             <tr>
                 <td rowspan="2" style="background-color: aliceblue;">
-                    @if(personnel.pJour[0]){
+                    @if(equipes.equipeMidi[0]){
                     <b>Sup.Signor:</b>
-                    {{personnel.pJour[0].nom_prenom}}
-                    <br><br>
+                    {{equipes.equipeMidi[0].nom_prenom}}
+                    <br>
                     <b>Team Leader</b>
-                    {{personnel.pJour[1].nom_prenom}}
+                    {{equipes.equipeMidi[1].nom_prenom}}
                     }
-
                 </td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
 
-                <td rowspan="2">12345</td> <!-- Insert the value for "Production Globale (Kg)" -->
-                <td rowspan="2">600</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>950</td>
-                <td>1164</td>
+                @if (productions.equipeMidi){
+                    @for (prod of productions.equipeMidi; track $index){
+                        <td rowspan="2">{{prod}}</td>
+                    }
+                }
 
-            </tr>
-            <!-- Add more rows for other supervisors and team leaders -->
+                <td rowspan="2">20</td> 
+                <td rowspan="2">20</td>
             <tr>
-                <td rowspan="2" style="background-color: aliceblue;"><b>Sup.Signor:</b> ISSAM <br><br>Team leader:
-                    TAYSIR</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-                <td rowspan="2">12345</td> <!-- Insert the value for "Production Globale (Kg)" -->
-                <td rowspan="2">600</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td rowspan="2" style="background-color: aliceblue;"><b>Sup.Signor:</b> ABD ELATIF <br><br>Team
-                    leader: MONIA</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-                <td rowspan="2">12345</td> <!-- Insert the value for "Production Globale (Kg)" -->
-                <td rowspan="2">600</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>5</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>950</td>
-                <td>1164</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
+                <td rowspan="2" style="background-color: aliceblue;">
+                    @if(equipes.equipeNuit[0]){
+                    <b>Sup.Signor:</b>
+                    {{equipes.equipeNuit[0].nom_prenom}}
+                    <br>
+                    <b>Team Leader</b>
+                    {{equipes.equipeNuit[1].nom_prenom}}
+                    }
+                </td>
+
+                @if (productions.equipeNuit){
+                    @for (prod of productions.equipeNuit; track $index){
+                        <td rowspan="2">{{prod}}</td>
+                    }
+                }
+
+                <td rowspan="2">30</td> 
+                <td rowspan="2">30</td>
             <tr>
                 <td class="bg-body-secondary"><b>Total</b></td>
                 <td colspan="18"></td>
                 <td>37015</td>
                 <td>1800</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+            </tr>-->
+
 <!--<canvas id="myChart" width="60" height="20"></canvas>-->
 <hr>
 <div class="podium">
