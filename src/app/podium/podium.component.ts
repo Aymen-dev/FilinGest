@@ -84,6 +84,27 @@ export class PodiumComponent implements OnInit {
       equipeMidi: [],
       equipeNuit: []
     }
+
+  rankings!: {
+    first: {
+      supervisor: Personnel,
+      teamLeader: Personnel,
+      prodMoyenne: number,
+      prodMensuelle: number
+    },
+    second: {
+      supervisor: Personnel,
+      teamLeader: Personnel,
+      prodMoyenne: number,
+      prodMensuelle: number
+    },
+    third: {
+      supervisor: Personnel,
+      teamLeader: Personnel,
+      prodMoyenne: number,
+      prodMensuelle: number
+    }
+  }
   selectedDepId: number = 0;
 
   constructor(private depService: DepartementService,
@@ -94,6 +115,26 @@ export class PodiumComponent implements OnInit {
 
   ngOnInit() {
     this.loadDepartements();
+    this.rankings = {
+      first: {
+        supervisor: {} as Personnel,
+        teamLeader: {} as Personnel,
+        prodMoyenne: 0,
+        prodMensuelle: 0
+      },
+      second: {
+        supervisor: {} as Personnel,
+        teamLeader: {} as Personnel,
+        prodMoyenne: 0,
+        prodMensuelle: 0
+      },
+      third: {
+        supervisor: {} as Personnel,
+        teamLeader: {} as Personnel,
+        prodMoyenne: 0,
+        prodMensuelle: 0
+      }
+    };
   }
 
 
@@ -135,6 +176,10 @@ export class PodiumComponent implements OnInit {
 
 
   loadProductions(depId: number) {
+    this.productions.equipeJour = [];
+    this.productions.equipeMidi = [];
+    this.productions.equipeNuit = [];
+
     this.enteteProdService.getEntetesForCurrentMonthByDep(depId).subscribe({
       next: response => {
         if (response.data.entetesProduction) {
@@ -183,7 +228,7 @@ export class PodiumComponent implements OnInit {
     }
   }
 
-  calculateProdGlobale(equipe: string): number {
+  calculateProdMensuelle(equipe: string): number {
     let sum;
     switch (equipe) {
       case 'jour':
@@ -212,4 +257,55 @@ export class PodiumComponent implements OnInit {
     const sum = arr.reduce((acc, value) => acc + value, 0);
     return sum / arr.length;
   }
+
+  /*rankings!: {
+    first: {
+      supervisor: Personnel,
+      teamLeader: Personnel,
+      prodMoyenne: number,
+      prodMensuelle: number
+    },
+    second: {
+      supervisor: Personnel,
+      teamLeader: Personnel,
+      prodMoyenne: number,
+      prodMensuelle: number
+    },
+    third: {
+      supervisor: Personnel,
+      teamLeader: Personnel,
+      prodMoyenne: number,
+      prodMensuelle: number
+    }
+  }*/
+
+  calculateRankings(){
+    let prods: any = {
+      equipeJour: {
+        prodMensuelle: this.calculateProdMensuelle('jour'),
+        prodMoyenne: this.calculateMean(this.productions.equipeJour)
+      },
+      equipeMidi: {
+        prodMensuelle: this.calculateProdMensuelle('midi'),
+        prodMoyenne: this.calculateMean(this.productions.equipeMidi)
+      },
+      equipeNuit: {
+        prodMensuelle: this.calculateProdMensuelle('nuit'),
+        prodMoyenne: this.calculateMean(this.productions.equipeNuit)
+      }
+    }
+
+    let rankingsArray = Object.keys(prods).map(key => ({ team: key, prodMensuelle: prods[key].prodMensuelle }));
+
+    // Sort the array in descending order based on prodMensuelle values
+    rankingsArray.sort((a, b) => b.prodMensuelle - a.prodMensuelle);
+
+    // Assign the top three rankings to the first, second, and third properties
+    this.rankings.first = prods[rankingsArray[0].team];
+    this.rankings.second = prods[rankingsArray[1].team];
+    this.rankings.third = prods[rankingsArray[2].team];
+
+    console.log(this.rankings)
+  }
+
 }
