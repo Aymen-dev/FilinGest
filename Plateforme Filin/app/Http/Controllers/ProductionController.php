@@ -9,9 +9,17 @@ use App\Models\EnteteProduction;
 use App\Models\Equipe;
 use App\Models\Machine;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class ProductionController extends Controller
 {
+
+    /*--------------------------------------------*/
+    /*--------------------------------------------*/
+    /*-----------     ENTETES     ----------------*/
+    /*--------------------------------------------*/
+    /*--------------------------------------------*/
+
     /** 
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
@@ -32,6 +40,65 @@ class ProductionController extends Controller
         ];
         return response()->json(['message' => 'Entete crée', 'data' => $data], 201);
     }
+
+
+    public function getEntetesForCurrentMonthByDep($depId)
+    {
+        $entetes = EnteteProduction::where('departement', $depId)
+            ->whereBetween('date_production', [Carbon::now()->startOfMonth(), Carbon::today()])
+            ->get();
+
+        if ($entetes->isEmpty())
+            return response()->json(['message' => 'Liste des entetes vide', 'data' => []], 200);
+
+        return response()->json(['message' => 'Liste des entetes retrouvée', 'data' => [
+            'entetesProduction' => $entetes
+        ]], 201);
+    }
+
+    /** 
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        EnteteProduction::findOrFail($id)->delete();
+        return response()->json(['message' => 'Production supprimée', 'data' => EnteteProduction::all()], 200);
+    }
+
+    /** 
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $prods = EnteteProduction::all();
+        if ($prods->isEmpty())
+            return response()->json(['message' => 'Liste des productions vide', 'data' => []], 202);
+
+        $equipes = [];
+        $departements = [];
+        foreach ($prods as $production) {
+            array_push($equipes, Equipe::find($production->equipe));
+            array_push($departements, Departement::find($production->departement));
+        }
+
+        return response()->json(['message' => 'Liste des productions retrouvée', 'data' => [
+            'entetesProduction' => $prods,
+            'equipes' => $equipes,
+            'departements' => $departements
+        ]], 200);
+    }
+
+    /*--------------------------------------------*/
+    /*--------------------------------------------*/
+    /*-----------     DETAILS     ----------------*/
+    /*--------------------------------------------*/
+    /*--------------------------------------------*/
+
+    /** 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
 
     public function createDetailsProduction(Request $request)
     {
@@ -68,24 +135,10 @@ class ProductionController extends Controller
         ]], 201);
     }
 
-    /**
-     * @return float
+    /** 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
      */
-    private function calculateMachineProduction($machine, $nbLevata)
-    {
-        $systeme = $machine->systeme;
-        if ($systeme == 0)
-            $production = $nbLevata * $machine->caract_numerique;
-        else {
-            $reunisseuse = Machine::where('systeme', $systeme)
-                ->where('nom_machine', 'Reunisseuse')->first();
-            //le champ 'caract_numerique' indique le nb de vases dans les prods preparation 
-            $nbr_vases = $reunisseuse->caract_numerique;
-            $pds_vase = $reunisseuse->pds_vase;
-            $production = $nbLevata * ($nbr_vases * $pds_vase);
-        }
-        return $production;
-    }
 
     public function updateDetailsProduction(Request $request)
     {
@@ -107,33 +160,10 @@ class ProductionController extends Controller
         return response()->json(['message' => 'Details mises à jour', 'data' => $records], 200);
     }
 
-    public function destroy($id)
-    {
-        EnteteProduction::findOrFail($id)->delete();
-        return response()->json(['message' => 'Production supprimée', 'data' => EnteteProduction::all()], 200);
-    }
-
-
-
-    public function index()
-    {
-        $prods = EnteteProduction::all();
-        if ($prods->isEmpty())
-            return response()->json(['message' => 'Liste des productions vide', 'data' => []], 202);
-
-        $equipes = [];
-        $departements = [];
-        foreach ($prods as $production) {
-            array_push($equipes, Equipe::find($production->equipe));
-            array_push($departements, Departement::find($production->departement));    
-        }
-
-        return response()->json(['message' => 'Liste des productions retrouvée', 'data' => [
-            'entetesProduction' => $prods,
-            'equipes' => $equipes,
-            'departements' => $departements
-        ]], 200);
-    }
+    /** 
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
 
     public function getDetailsProductionByEnteteId($id)
     {
@@ -149,8 +179,28 @@ class ProductionController extends Controller
             'machines' => $machines,
             'enteteProduction' => $entete,
             'detailsProduction' => $records,
-            'equipe' => Equipe::find($entete->equipe)
+            'equipe' => Equipe::find($entete->equipe),
+            'departement' => Departement::find($entete->departement)
         ];
         return response()->json(['message' => 'Details retrouvées', 'data' => $data], 200);
+    }
+
+    /**
+     * @return float
+     */
+    private function calculateMachineProduction($machine, $nbLevata)
+    {
+        $systeme = $machine->systeme;
+        if ($systeme == 0)
+            $production = $nbLevata * $machine->caract_numerique;
+        else {
+            $reunisseuse = Machine::where('systeme', $systeme)
+                ->where('nom_machine', 'Reunisseuse')->first();
+            //le champ 'caract_numerique' indique le nb de vases dans les prods preparation 
+            $nbr_vases = $reunisseuse->caract_numerique;
+            $pds_vase = $reunisseuse->pds_vase;
+            $production = $nbLevata * ($nbr_vases * $pds_vase);
+        }
+        return $production;
     }
 }

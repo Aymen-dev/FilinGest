@@ -60,6 +60,7 @@ Route::prefix('/production')->group(function () {
     Route::get('{id}','App\Http\Controllers\ProductionController@getDetailsProductionByEnteteId');
     Route::put('{id}', 'App\Http\Controllers\ProductionController@updateDetailsProduction');
     Route::get('/titres_fil', 'App\Http\Controllers\ProductionController@getTitresFil');
+    Route::get('/entetes_by_dep_for_curr_month/{id}', 'App\Http\Controllers\ProductionController@getEntetesForCurrentMonthByDep');
 });
 
 Route::prefix('/titres')->group(function () {
