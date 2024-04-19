@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api\V2;
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\V2\StoreentetePlannificationRequest;
 use App\Http\Controllers\Controller;
 
-use App\Models\V2\arret;
-use App\Models\V2\machine;
-use App\Models\V2\entetePlannification;
-use App\Models\V2\detailsPlannification;
-use App\Models\V2\detailsPlannificationMachine;
-use App\Models\V2\machine_arret;
+use App\Models\arret;
+use App\Models\machine;
+use App\Models\entetePlannification;
+use App\Models\detailsPlannification;
+use App\Models\detailsPlannificationMachine;
+use App\Models\machine_arret;
 use Carbon\Carbon;
 
 class planProductionController extends Controller
@@ -67,7 +66,7 @@ class planProductionController extends Controller
     }
 
     public function stopMachine($id,$date){
-      $idArret;
+      $idArret = 0;
       $arret=arret::where("date_debut_arret",$date)->first();
       if($arret){
         $idArret=$arret->id_arret;

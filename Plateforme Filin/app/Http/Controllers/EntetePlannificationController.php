@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\entetePlannification;
-use App\Http\Requests\StoreentetePlannificationRequest;
-use App\Http\Requests\UpdateentetePlannificationRequest;
+use App\Models\V2\entetePlannification;
+use App\Http\Requests\V2\StoreentetePlannificationRequest;
+use App\Http\Requests\V2\UpdateentetePlannificationRequest;
 
 class EntetePlannificationController extends Controller
 {

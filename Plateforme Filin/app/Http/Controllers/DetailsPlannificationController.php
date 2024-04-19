@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\detailsPlannification;
-use App\Http\Requests\StoredetailsPlannificationRequest;
-use App\Http\Requests\UpdatedetailsPlannificationRequest;
+use App\Models\V2\detailsPlannification;
+use \App\Http\Requests\V2\StoredetailsPlannificationRequest;
+use \App\Http\Requests\V2\UpdatedetailsPlannificationRequest;
 
 class DetailsPlannificationController extends Controller
 {
