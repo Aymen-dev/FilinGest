@@ -87,20 +87,17 @@ export class PodiumComponent implements OnInit {
 
   rankings!: {
     first: {
-      supervisor: Personnel,
-      teamLeader: Personnel,
+      equipe: string,
       prodMoyenne: number,
       prodMensuelle: number
     },
     second: {
-      supervisor: Personnel,
-      teamLeader: Personnel,
+      equipe: string,
       prodMoyenne: number,
       prodMensuelle: number
     },
     third: {
-      supervisor: Personnel,
-      teamLeader: Personnel,
+      equipe: string,
       prodMoyenne: number,
       prodMensuelle: number
     }
@@ -117,26 +114,22 @@ export class PodiumComponent implements OnInit {
     this.loadDepartements();
     this.rankings = {
       first: {
-        supervisor: {} as Personnel,
-        teamLeader: {} as Personnel,
+        equipe: '',
         prodMoyenne: 0,
         prodMensuelle: 0
       },
       second: {
-        supervisor: {} as Personnel,
-        teamLeader: {} as Personnel,
+        equipe: '',
         prodMoyenne: 0,
         prodMensuelle: 0
       },
       third: {
-        supervisor: {} as Personnel,
-        teamLeader: {} as Personnel,
+        equipe: '',
         prodMoyenne: 0,
         prodMensuelle: 0
       }
     };
   }
-
 
   loadDepartements() {
     this.depService.getListeDepartements().subscribe({
@@ -150,7 +143,6 @@ export class PodiumComponent implements OnInit {
     })
   }
 
-
   loadPersonnel(depId: number): void {
     this.equipeService.getListeEquipesByDep(depId).subscribe({
       next: response => {
@@ -159,7 +151,7 @@ export class PodiumComponent implements OnInit {
             this.personnelService.getListePersonnelByEquipe(equipe.id_equipe).subscribe({
               next: response => {
                 if (response.data.personnel)
-                  this.equipes[this.getSeanceEquipe(equipe.nom_equipe) as keyof typeof this.equipes] = response.data.personnel
+                  this.equipes[this.getSeanceEquipe(equipe.nom_equipe) as keyof typeof this.equipes] = response.data.personnel;
               },
               error: err => {
                 console.error(err);
@@ -173,7 +165,6 @@ export class PodiumComponent implements OnInit {
       }
     });
   }
-
 
   loadProductions(depId: number) {
     this.productions.equipeJour = [];
@@ -200,6 +191,7 @@ export class PodiumComponent implements OnInit {
                     this.productions.equipeNuit.push(prodJournaliere);
                     break;
                 }
+                this.calculateRankings();
               },
               error: err => {
                 console.error(err);
@@ -213,7 +205,6 @@ export class PodiumComponent implements OnInit {
       }
     })
   }
-
 
   getSeanceEquipe(equipeName: string): string {
     switch (equipeName) {
@@ -252,13 +243,13 @@ export class PodiumComponent implements OnInit {
 
   calculateMean(arr: number[]): number {
     if (arr.length === 0) {
-      return 0; 
+      return 0;
     }
     const sum = arr.reduce((acc, value) => acc + value, 0);
     return sum / arr.length;
   }
 
-  calculateRankings(){
+  calculateRankings() {
     let prods: any = {
       equipeJour: {
         prodMensuelle: this.calculateProdMensuelle('jour'),
@@ -274,17 +265,31 @@ export class PodiumComponent implements OnInit {
       }
     }
 
-    let rankingsArray = Object.keys(prods).map(key => ({ team: key, prodMensuelle: prods[key].prodMensuelle }));
+    let rankingsArray = Object.keys(prods).map(key => ({
+      team: key, 
+      prodMensuelle: prods[key].prodMensuelle,
+      prodMoyenne: prods[key].prodMoyenne
+    }));
 
     // Sort the array in descending order based on prodMensuelle values
     rankingsArray.sort((a, b) => b.prodMensuelle - a.prodMensuelle);
+    //console.log(rankingsArray)
 
-    // Assign the top three rankings to the first, second, and third properties
-    this.rankings.first = prods[rankingsArray[0].team];
-    this.rankings.second = prods[rankingsArray[1].team];
-    this.rankings.third = prods[rankingsArray[2].team];
-
-    console.log(this.rankings)
+    this.rankings.first = {
+      equipe: rankingsArray[0].team.toUpperCase(),
+      prodMensuelle: rankingsArray[0].prodMensuelle,
+      prodMoyenne: rankingsArray[0].prodMoyenne
+    };
+    this.rankings.second = {
+      equipe: rankingsArray[1].team.toUpperCase(),
+      prodMensuelle: rankingsArray[1].prodMensuelle,
+      prodMoyenne: rankingsArray[1].prodMoyenne
+    };
+    this.rankings.third = {
+      equipe: rankingsArray[2].team.toUpperCase(),
+      prodMensuelle: rankingsArray[2].prodMensuelle,
+      prodMoyenne: rankingsArray[2].prodMoyenne
+    };
   }
 
 }

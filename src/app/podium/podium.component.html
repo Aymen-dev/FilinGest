@@ -6,7 +6,7 @@
                 <div class="d-flex flex-column mb-2">
                     <p class="mb-1">Département</p>
                     <select class="form-select" required name="departement" [(ngModel)]="selectedDepId"
-                        (change)="loadPersonnel(selectedDepId); loadProductions(selectedDepId); calculateRankings()">
+                        (change)="loadPersonnel(selectedDepId); loadProductions(selectedDepId)">
                         <option value=0 selected disabled>Selectionner un departement</option>
                         @for(dep of departements; track $index) {
                         <option [value]="dep.id_departement">{{dep.nom_departement}}</option>
@@ -23,11 +23,13 @@
         <thead>
             <tr>
                 <th class="bg-body-tertiary">Superviseur / Team Leader</th>
-                <th [colSpan]="productions.equipeJour.length / 2" class="bg-body-tertiary">
+                @if(productions.equipeJour.length){
+                <th [colSpan]="productions.equipeJour.length" class="bg-body-tertiary">
                     Production (Kg)
                 </th>
-                <th colspan="1" class="bg-body-tertiary">Production Mensuelle (Kg)</th>
-                <th colspan="1" class="bg-body-tertiary">Production Moyenne (Kg)</th>
+                }
+                <th class="bg-body-tertiary">Production Mensuelle (Kg)</th>
+                <th class="bg-body-tertiary">Production Moyenne (Kg)</th>
             </tr>
         </thead>
         <tbody>
@@ -37,26 +39,20 @@
                 <td style="background-color: aliceblue;">
                     <b>Sup.Signor</b>
                     {{equipes.equipeJour[0].nom_prenom}}
-                </td>
-                <ng-container>
-                    @for (prod of productions.equipeJour.slice(0, (productions.equipeJour.length / 2) + 1); track
-                    $index){
-                    <td>{{prod}}</td>
-                    }
-                </ng-container>
-                <td rowspan="2" style="font-size: 22px;">{{calculateProdMensuelle('jour')}}</td>
-                <td rowspan="2" style="font-size: 22px;">{{calculateMean(productions.equipeJour)}}</td>
-            </tr>
-            <tr>
-                <td style="background-color: aliceblue;">
+                    <br>
                     <b>Team Leader</b>
                     {{equipes.equipeJour[1].nom_prenom}}
                 </td>
-                <ng-container>
-                    @for (prod of productions.equipeJour.slice(productions.equipeJour.length / 2); track $index){
-                    <td>{{prod}}</td>
-                    }
-                </ng-container>
+                @if(productions.equipeJour.length){
+                @for (prod of productions.equipeJour; track $index){
+                <td>{{prod}}</td>
+                }
+                }
+                @else {
+                <td></td>
+                }
+                <td style="font-size: 22px;">{{calculateProdMensuelle('jour')}}</td>
+                <td style="font-size: 22px;">{{calculateMean(productions.equipeJour)}}</td>
             </tr>
 
             <!-------------------------  Equipe MIDI  --------------------------------->
@@ -64,21 +60,20 @@
                 <td style="background-color: aliceblue;">
                     <b>Sup.Signor</b>
                     {{equipes.equipeMidi[0].nom_prenom}}
-                </td>
-                @for (prod of productions.equipeMidi.slice(0, productions.equipeMidi.length / 2); track $index){
-                <td>{{prod}}</td>
-                }
-                <td rowspan="2" style="font-size: 22px;">{{calculateProdMensuelle('midi')}}</td>
-                <td rowspan="2" style="font-size: 22px;">{{calculateMean(productions.equipeMidi)}}</td>
-            </tr>
-            <tr>
-                <td style="background-color: aliceblue;">
+                    <br>
                     <b>Team Leader</b>
                     {{equipes.equipeMidi[1].nom_prenom}}
                 </td>
-                @for (prod of productions.equipeMidi.slice(productions.equipeMidi.length / 2); track $index){
+                @if(productions.equipeMidi.length){
+                @for (prod of productions.equipeMidi; track $index){
                 <td>{{prod}}</td>
                 }
+                }
+                @else {
+                <td></td>
+                }
+                <td style="font-size: 22px;">{{calculateProdMensuelle('midi')}}</td>
+                <td style="font-size: 22px;">{{calculateMean(productions.equipeMidi)}}</td>
             </tr>
 
             <!-------------------------  Equipe NUIT  --------------------------------->
@@ -86,24 +81,22 @@
                 <td style="background-color: aliceblue;">
                     <b>Sup.Signor</b>
                     {{equipes.equipeNuit[0].nom_prenom}}
-                </td>
-                @for (prod of productions.equipeNuit.slice(0, productions.equipeNuit.length / 2); track $index){
-                <td>{{prod}}</td>
-                }
-                <td rowspan="2" style="font-size: 22px;">{{calculateProdMensuelle('nuit')}}</td>
-                <td rowspan="2" style="font-size: 22px;">{{calculateMean(productions.equipeNuit)}}</td>
-            </tr>
-            <tr>
-                <td style="background-color: aliceblue;">
+                    <br>
                     <b>Team Leader</b>
                     {{equipes.equipeNuit[1].nom_prenom}}
                 </td>
-                @for (prod of productions.equipeNuit.slice(productions.equipeNuit.length / 2); track $index){
+                @if(productions.equipeNuit.length){
+                @for (prod of productions.equipeNuit; track $index){
                 <td>{{prod}}</td>
                 }
+                }
+                @else {
+                <td></td>
+                }
+                <td style="font-size: 22px;">{{calculateProdMensuelle('nuit')}}</td>
+                <td style="font-size: 22px;">{{calculateMean(productions.equipeNuit)}}</td>
             </tr>
             }
-
         </tbody>
     </table>
 </div>
@@ -116,24 +109,17 @@
         <div class="card card-body bg-body-tertiary">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <div class="d-flex gap-5 mb-3">
-                        <div class="sup">
-                            <h5 class="card-title">Sup.Signor</h5>
-                            <h6 class="card-subtitle mb-2 text-body-secondary">ISSAM</h6>
-                        </div>
-                        <div class="leader">
-                            <h5 class="card-title">Team Leader</h5>
-                            <h6 class="card-subtitle mb-2 text-body-secondary">TAYSIR</h6>
-                        </div>
+                    <div class="text-center mb-3 fw-bold" style="font-size: 18px;">
+                        <p>{{rankings.second.equipe}}</p>
                     </div>
                     <table class="table table-bordered m-0">
                         <tr>
                             <td>Prod Moyenne (Kg)</td>
-                            <td>1125</td>
+                            <td>{{rankings.second.prodMoyenne}}</td>
                         </tr>
                         <tr>
                             <td>Prod Mensuelle (Kg)</td>
-                            <td>3554</td>
+                            <td>{{rankings.second.prodMensuelle}}</td>
                         </tr>
                     </table>
                 </div>
@@ -147,24 +133,17 @@
         <div class="card card-body bg-body-tertiary">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <div class="d-flex gap-5 mb-3">
-                        <div class="sup">
-                            <h5 class="card-title">Sup.Signor</h5>
-                            <h6 class="card-subtitle mb-2 text-body-secondary">ISSAM</h6>
-                        </div>
-                        <div class="leader">
-                            <h5 class="card-title">Team Leader</h5>
-                            <h6 class="card-subtitle mb-2 text-body-secondary">TAYSIR</h6>
-                        </div>
+                    <div class="text-center mb-3 fw-bold" style="font-size: 18px;">
+                        <p>{{rankings.first.equipe}}</p>
                     </div>
                     <table class="table table-bordered m-0">
                         <tr>
                             <td>Prod Moyenne (Kg)</td>
-                            <td>1125</td>
+                            <td>{{rankings.first.prodMoyenne}}</td>
                         </tr>
                         <tr>
                             <td>Prod Mensuelle (Kg)</td>
-                            <td>3554</td>
+                            <td>{{rankings.first.prodMensuelle}}</td>
                         </tr>
                     </table>
                 </div>
@@ -178,24 +157,17 @@
         <div class="card card-body bg-body-tertiary">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <div class="d-flex gap-5 mb-3">
-                        <div class="sup">
-                            <h5 class="card-title">Sup.Signor</h5>
-                            <h6 class="card-subtitle mb-2 text-body-secondary">ISSAM</h6>
-                        </div>
-                        <div class="leader">
-                            <h5 class="card-title">Team Leader</h5>
-                            <h6 class="card-subtitle mb-2 text-body-secondary">TAYSIR</h6>
-                        </div>
+                    <div class="text-center mb-3 fw-bold" style="font-size: 18px;">
+                        <p>{{rankings.third.equipe}}</p>
                     </div>
                     <table class="table table-bordered m-0">
                         <tr>
                             <td>Prod Moyenne (Kg)</td>
-                            <td>1125</td>
+                            <td>{{rankings.third.prodMoyenne}}</td>
                         </tr>
                         <tr>
                             <td>Prod Mensuelle (Kg)</td>
-                            <td>3554</td>
+                            <td>{{rankings.third.prodMensuelle}}</td>
                         </tr>
                     </table>
                 </div>
