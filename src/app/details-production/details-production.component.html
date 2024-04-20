@@ -14,7 +14,7 @@
     </div>
 </div>
 
-<form (submit)="createDetailsProduction(formData)" #myForm="ngForm">
+<form (submit)="createDetailsProduction(formData, myForm)" #myForm="ngForm">
 
     <!--Pannes-->
     <!--
@@ -83,7 +83,7 @@
                     @else {
                     <th scope="row">{{ machine.nom_machine }}</th>
                     }
-                    <td class="p-0">
+                    <td>
                         <input type="number" required min="1" max="19" class="text-center table-input"
                             name="nbLevata{{$index}}" [(ngModel)]="inputLevata[$index]" #levataInput="ngModel">
                         <div *ngIf="levataInput.invalid && (levataInput.dirty || levataInput.touched)">
@@ -93,12 +93,12 @@
                         </div>
                     </td>
                     <div *ngIf="isDepFilature">
-                        <td class="p-0">
-                            <select class="form-select text-center" [(ngModel)]="inputTitre[$index]"
-                                name="titre{{$index}}">
-                                <option selected disabled>Selectionner le titre</option>
+                        <td>
+                            <select required class="form-select text-center" [(ngModel)]="inputTitre[$index]"
+                                name="inputTitre{{$index}}">
+                                <option [ngValue]="null" selected disabled>Selectionner le titre</option>
                                 @for (titre of titresFil; track $index) {
-                                <option [value]="titre.id_titre">{{titre.valeur_titre}}</option>
+                                <option [value]="+titre.id_titre">{{titre.valeur_titre}}</option>
                                 }
                             </select>
                         </td>
@@ -109,7 +109,7 @@
         </table>
     </div>
     <div class="d-flex justify-content-end">
-        <button type="submit" class="button" [disabled]="!myForm.form.valid">Enregistrer</button>
+        <button type="submit" class="button">Enregistrer</button>
     </div>
 </form>
 <simple-notifications />
