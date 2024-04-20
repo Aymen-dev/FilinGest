@@ -258,27 +258,6 @@ export class PodiumComponent implements OnInit {
     return sum / arr.length;
   }
 
-  /*rankings!: {
-    first: {
-      supervisor: Personnel,
-      teamLeader: Personnel,
-      prodMoyenne: number,
-      prodMensuelle: number
-    },
-    second: {
-      supervisor: Personnel,
-      teamLeader: Personnel,
-      prodMoyenne: number,
-      prodMensuelle: number
-    },
-    third: {
-      supervisor: Personnel,
-      teamLeader: Personnel,
-      prodMoyenne: number,
-      prodMensuelle: number
-    }
-  }*/
-
   calculateRankings(){
     let prods: any = {
       equipeJour: {

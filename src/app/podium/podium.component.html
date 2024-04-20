@@ -38,9 +38,12 @@
                     <b>Sup.Signor</b>
                     {{equipes.equipeJour[0].nom_prenom}}
                 </td>
-                @for (prod of productions.equipeJour.slice(0, (productions.equipeJour.length / 2) + 1); track $index){
-                <td>{{prod}}</td>
-                }
+                <ng-container>
+                    @for (prod of productions.equipeJour.slice(0, (productions.equipeJour.length / 2) + 1); track
+                    $index){
+                    <td>{{prod}}</td>
+                    }
+                </ng-container>
                 <td rowspan="2" style="font-size: 22px;">{{calculateProdMensuelle('jour')}}</td>
                 <td rowspan="2" style="font-size: 22px;">{{calculateMean(productions.equipeJour)}}</td>
             </tr>
@@ -49,9 +52,11 @@
                     <b>Team Leader</b>
                     {{equipes.equipeJour[1].nom_prenom}}
                 </td>
-                @for (prod of productions.equipeJour.slice(productions.equipeJour.length / 2); track $index){
-                <td>{{prod}}</td>
-                }
+                <ng-container>
+                    @for (prod of productions.equipeJour.slice(productions.equipeJour.length / 2); track $index){
+                    <td>{{prod}}</td>
+                    }
+                </ng-container>
             </tr>
 
             <!-------------------------  Equipe MIDI  --------------------------------->
