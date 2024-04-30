@@ -45,7 +45,7 @@ class ProductionController extends Controller
     public function getEntetesForCurrentMonthByDep($depId)
     {
         $entetes = EnteteProduction::where('departement', $depId)
-            ->whereBetween('date_production', [Carbon::now()->startOfMonth(), Carbon::today()])
+            ->whereBetween('date_production', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
             ->get();
 
         if ($entetes->isEmpty())
@@ -105,20 +105,14 @@ class ProductionController extends Controller
         $details = $request->productionDetails;
 
         foreach ($details as $detail) {
-            //le calcul du kg_produit differe d'un dep a un autre donc on verifie on est dans quel dep
-            //systeme 0 -> dep filature, systeme != 0 -> dep preparation
+            //le calcul du kg_produit differe d'un dep a un autre
+            //systeme == 0 -> dep filature, systeme != 0 -> dep preparation
 
             $machine = Machine::where('numero', $detail['numero_machine'])->first();
+            $titre = TitreFil::find($detail['titre']);
             $nbLevata = $detail['nbLevata'];
             $production = $this->calculateMachineProduction($machine, $nbLevata);
-            if ($machine->nom_machine != 'Reunisseuse') {
-                $titre = TitreFil::find($detail['titre']);
-                if ($titre)
-                    $objectif_prod = $titre->nb_levata * $machine->caract_numerique;
-                else
-                    $objectif_prod = 0;
-            } else
-                $objectif_prod = 0;
+            $objectif_prod = $detail['objectif_production']; //$this->calculateObjectifProd($machine, $titre);
 
             $new_record = new DetailsProduction();
             $new_record->production = $production;
@@ -149,10 +143,11 @@ class ProductionController extends Controller
         $i = 0;
         foreach ($records as $record) {
             $machine = Machine::where('numero', $record['machine'])->first();
-            $nbLevata = $details[$i]['nbLevata'];
-            $record->nb_levata = $nbLevata;
-            $record->production = $this->calculateMachineProduction($machine, $nbLevata);
-            // Save the changes to the record
+            $titre = TitreFil::find($details[$i]['titre']);
+            $record->titre_fil = $details[$i]['titre'];
+            $record->nb_levata = $details[$i]['nbLevata'];
+            $record->objectif_production = $details[$i]['objectif_production']; //$this->calculateObjectifProd($machine, $titre);
+            $record->production = $this->calculateMachineProduction($machine, $details[$i]['nbLevata']);
             $record->save();
             $i++;
         }
@@ -203,4 +198,16 @@ class ProductionController extends Controller
         }
         return $production;
     }
+
+    /*private function calculateObjectifProd($machine, $titre)
+    {
+        if ($machine->nom_machine != 'Reunisseuse') {
+            if ($titre)
+                $objectif_prod = $titre->nb_levata * $machine->caract_numerique;
+            else
+                $objectif_prod = 0;
+        } else
+            $objectif_prod = 0;
+        return $objectif_prod;
+    }*/
 }

@@ -71,7 +71,7 @@ Route::prefix('/marques')->group(function () {
     Route::get('/', 'App\Http\Controllers\MarqueController@index');
 });
 
-Route::prefix('/plannification')->group(function() {
+Route::prefix('/planification')->group(function() {
     Route::post('/create','App\Http\Controllers\planProductionController@createPlannification');
     Route::post('/findStates','App\Http\Controllers\planProductionController@getPlansForThisDAy');
 });
