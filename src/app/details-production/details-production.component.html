@@ -71,6 +71,7 @@
                 <tr>
                     <td scope="col" class="thead"><span class="">Métier</span></td>
                     <td scope="col" class="thead">Nb Levata</td>
+                    <td scope="col" class="thead">Objectif Production</td>
                     <td *ngIf="isDepFilature" class="thead" scope="col">Titre Fil</td>
                 </tr>
             </thead>
@@ -91,6 +92,10 @@
                                 <div class="alert-info">Saisir un nombre entre 1 et 19</div>
                             </div>
                         </div>
+                    </td>
+                    <td>
+                        <input type="number" required class="text-center table-input" name="objectifProd{{$index}}"
+                            [(ngModel)]="inputObjectifProd[$index]">
                     </td>
                     <div *ngIf="isDepFilature">
                         <td>

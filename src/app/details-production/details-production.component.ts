@@ -30,6 +30,7 @@ export class DetailsProductionComponent implements OnInit {
   dateProduction = '';
   titresFil: Array<TitreFil> = [];
   inputLevata: Array<number> = [];
+  inputObjectifProd: Array<number> = [];
   inputTitre: Array<number | null> = [];
   nbLevatas: Array<number> = [];
   response!: BackendResponse;
@@ -73,16 +74,24 @@ export class DetailsProductionComponent implements OnInit {
         this.titreService.getTitresFil().subscribe({
           next: resp => {
             this.titresFil = resp.data.titresFil!
-            if (history.state.action == 'add')
+            if (history.state.action == 'add') {
               for (let item of (response as any).data.plans) {
-                if (item.plan.length == 0)
+                if (item.plan.length == 0) {
                   this.inputTitre.push(null);
-                else
-                  this.inputTitre.push(this.titresFil.find(element => element.id_titre == item.plan[0].titre)!.id_titre)
+                  this.inputObjectifProd.push(0);
+                }
+                else {
+                  this.inputTitre.push(this.titresFil.find(element => element.id_titre == item.plan[0].titre)!.id_titre);
+                  this.inputObjectifProd.push(item.plan[0]["Kg_standard"]);
+                }
               }
-            else
-              for (let item of this.response.data.detailsProduction!)
+            }
+            else {
+              for (let item of this.response.data.detailsProduction!){
                 this.inputTitre.push(item.titre_fil!);
+                this.inputObjectifProd.push(item.objectif_production);
+              }
+            }
           },
           error: err => {
             console.log(err);
@@ -164,13 +173,15 @@ export class DetailsProductionComponent implements OnInit {
         id_entete: number,
         numero_machine: number,
         systeme: number,
-        titre: number | null
+        titre: number | null,
+        objectif_production: number
       } = {
         nbLevata: this.inputLevata[this.machines!.indexOf(machine)],
         id_entete: response.data.enteteProduction!.id_entete,
         numero_machine: machine.numero,
         systeme: machine.systeme,
-        titre: this.inputTitre.length !== 0 ? this.inputTitre[this.machines!.indexOf(machine)] : null
+        titre: this.inputTitre.length !== 0 ? this.inputTitre[this.machines!.indexOf(machine)] : null,
+        objectif_production: this.inputObjectifProd[this.machines!.indexOf(machine)]
       };
       this.formData.productionDetails.push(productionDetail);
     });
