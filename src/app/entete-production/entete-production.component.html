@@ -21,7 +21,7 @@
         </div>
 
         <div class="d-flex gap-3 mb-4">
-            <div class="col-sm-4">
+            <div class="col-sm-5">
                 <h5>Equipe</h5>
                 <select class="form-select" required [(ngModel)]="formData.idEquipe" name="equipe"
                     [disabled]="!formData.idDepartement" (change)="loadListePersonnel(+formData.idEquipe!)">
@@ -32,30 +32,24 @@
                 </select>
             </div>
             <div class="col-sm">
-                <h5>Superviseur</h5>
-                <select class="form-select" required [(ngModel)]="formData.idSuperviseur" name="superviseur"
-                    [disabled]="!formData.idEquipe">
-                    <option value=null selected disabled>Selectionner une superviseur</option>
-                    @for (sup of listeSuperviseurs; track $index){
-                    <option [value]="sup.id_personnel">{{ sup.nom_prenom }}</option>
-                    }
-                </select>
+                <div *ngIf="listeSuperviseurs[0]">
+                    <h5>Superviseur</h5>
+                    <input type="text" class="form-control" disabled [(ngModel)]="formData.idSuperviseur"
+                        name="superviseur" [placeholder]="listeSuperviseurs[0].nom_prenom" />
+                </div>
             </div>
             <div class="col-sm">
-                <h5>Team leader</h5>
-                <select class="form-select" required [(ngModel)]="formData.idTeamLeader" name="team_leader"
-                    [disabled]="!formData.idEquipe">
-                    <option value=null selected disabled>Selectionner un team leader</option>
-                    @for (leader of listeTeamLeaders; track $index){
-                    <option [value]="leader.id_personnel">{{ leader.nom_prenom }}</option>
-                    }
-                </select>
+                <div *ngIf="listeTeamLeaders[0]">
+                    <h5>Team leader</h5>
+                    <input type="text" class="form-control" disabled [(ngModel)]="formData.idTeamLeader"
+                        name="team_leader" [placeholder]="listeTeamLeaders[0].nom_prenom" />
+                </div>
             </div>
         </div>
         <div class="d-flex justify-content-end">
             <button type="submit" class="button mt-3">Remplir details</button>
         </div>
-        
+
 
     </div>
 </form>
